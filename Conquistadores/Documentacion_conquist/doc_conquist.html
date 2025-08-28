@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Documentación</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .table-container {
+            margin-top: 2rem;
+        }
+        .evidencia-preview {
+            max-width: 100px;
+            max-height: 100px;
+        }
+        .invalid-feedback {
+            display: none;
+            color: #dc3545;
+            font-size: 0.875em;
+        }
+        .was-validated .form-control:invalid ~ .invalid-feedback,
+        .was-validated .form-select:invalid ~ .invalid-feedback {
+            display: block;
+        }
+        .was-validated .form-control:invalid,
+        .was-validated .form-select:invalid {
+            border-color: #dc3545;
+        }
+        .was-validated .form-control:valid,
+        .was-validated .form-select:valid {
+            border-color: #198754;
+        }
+        .doc-links {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        .doc-links a {
+            margin-right: 20px;
+            color: #0d6efd;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .doc-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a href="" class="btn btn-primary">
+            <i class="fas fa-home me-2"></i>Volver al Menú Principal
+        </a>
+        <h2>Documentación de Aventureros</h2>
+    </div>
+
+    <!-- Enlaces de Documentación -->
+    <div class="doc-links">
+        <a href="../inscripcion.html"><i class="fas fa-file-alt me-2"></i>Inscripción</a>
+        <a href=""><i class="fas fa-clipboard-list me-2"></i>Guías de seguimiento</a>
+    </div>
+
+    <!-- Formulario de Registro -->
+    <div class="card">
+        <div class="card-body">
+            <form id="registroForm" onsubmit="guardarRegistro(event)" class="needs-validation" novalidate>
+                    <div class="invalid-feedback">Por favor complete todos los campos requeridos correctamente.</div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="categoria" class="form-label">Categoría</label>
+                            <select class="form-select" id="categoria" required>
+                                <div class="invalid-feedback">Por favor seleccione una categoría.</div>
+                                <option value="">Seleccione una categoría</option>
+                                <option value="Seguro Anual">Seguro Anual</option>
+                                <option value="Plan de accion y Programa">Plan de accion y Programa</option>
+                                <option value="Ceremonia de Iniciación">Ceremonia de Iniciación</option>
+                                <option value="Creación de Clubes">Creación de Clubes</option>
+                                <option value="Actividades espirituales">Actividades espirituales 0/3</option>
+                                <option value="Servicios comunitarios ">Servicios comunitarios 0/4</option>
+                                <option value="Clases progresivas e investiduras">Clases progresivas e investiduras</option>
+                                <option value="Instrucción">Instrucción</option>
+                                <option value="Actividades sociales y recreativas">Actividades sociales y recreativas 0/11</option>
+                                <option value="Actividades Zonales">Actividades Zonales</option>
+                                <option value="Departamentales">Departamentales</option>
+                                <option value="Camporee">Camporee</option>
+                                <option value="Redes Sociales">Redes Sociales</option>
+
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="club" class="form-label">Club</label>
+                            <select class="form-select" id="club" required>
+                                <div class="invalid-feedback">Por favor seleccione un club.</div>
+                                <option value="">Seleccione un club</option>
+                                <option value="Enmanuel">Enmanuel</option>
+                                <option value="Estrellitas de Jesús">Estrellitas de Jesús</option>
+                                <option value="Pequeños Héroes de la Fe">Pequeños Héroes de la Fe</option>
+                                <option value="Soldaditos de Jesús">Soldaditos de Jesús</option>
+                                <option value="Pequeños Pioneros">Pequeños Pioneros</option>
+                                <option value="Soldaditos del Rey">Soldaditos del Rey</option>
+                                <option value="Oejitas de Jesús">Oejitas de Jesús</option>
+                                <option value="Geuel">Geuel</option>
+                                <option value="Hormigitas Laboriosas">Hormigitas Laboriosas</option>
+                                <option value="Luz de Siloé">Luz de Siloé</option>
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="fecha" class="form-label">Fecha</label>
+                            <input type="date" class="form-control" id="fecha" required>
+                                <div class="invalid-feedback">Por favor seleccione una fecha válida.</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="evidencia" class="form-label">Evidencias (opcional)</label>
+                            <input type="file" class="form-control" id="evidencia" accept="image/*,application/pdf" onchange="mostrarVistaPrevia(this)">
+                            <div class="invalid-feedback">El archivo debe ser una imagen o PDF válido (máx. 5MB).</div>
+                            <div id="vistaPrevia" class="mt-2" style="display: none;">
+                                <div id="imagenPrevia" class="evidencia-preview"></div>
+                                <div id="pdfPrevia" style="display: none;">
+                                    <i class="fas fa-file-pdf" style="font-size: 48px; color: #dc3545;"></i>
+                                    <p id="nombreArchivo" class="mt-2"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="linkEvidencias" class="form-label">Link Evidencias (opcional)</label>
+                            <input type="text" class="form-control" id="linkEvidencias" placeholder="Ingrese el enlace de evidencias adicionales">
+                            <div class="invalid-feedback">Por favor ingrese un enlace válido si desea agregar uno.</div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label for="observaciones" class="form-label">Observaciones</label>
+                            <textarea class="form-control" id="observaciones" rows="3" required minlength="10"></textarea>
+                                <div class="invalid-feedback">Por favor ingrese observaciones con al menos 10 caracteres.</div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Guardar Registro</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de Registros -->
+    <div class="card table-container">
+        <div class="card-body">
+            <h3>Registros</h3>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Categoría</th>
+                            <th>Club</th>
+                            <th>Fecha</th>
+                            <th>Evidencia</th>
+                            <th>Link Evidencias</th>
+                            <th>Observaciones</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="registrosTabla"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edición -->
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Registro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm">
+                        <input type="hidden" id="editId">
+                        <div class="mb-3">
+                            <label for="editCategoria" class="form-label">Categoría</label>
+                            <select class="form-select" id="editCategoria" required>
+                                <option value="">Seleccione una categoría</option>
+                                <option value="Seguro Anual">Seguro Anual</option>
+                                <option value="Plan de accion y Programa">Plan de accion y Programa</option>
+                                <option value="Ceremonia de Iniciación">Ceremonia de Iniciación</option>
+                                <option value="Creación de Clubes">Creación de Clubes</option>
+                                <option value="Actividades espirituales">Actividades espirituales 0/3</option>
+                                <option value="Servicios comunitarios">Servicios comunitarios 0/4</option>
+                                <option value="Clases progresivas e investiduras">Clases progresivas e investiduras</option>
+                                <option value="Instrucción">Instrucción</option>
+                                <option value="Actividades sociales y recreativas">Actividades sociales y recreativas 0/11</option>
+                                <option value="Actividades Zonales">Actividades Zonales</option>
+                                <option value="Departamentales">Departamentales</option>
+                                <option value="Camporee">Camporee</option>
+                                <option value="Redes Sociales">Redes Sociales</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editClub" class="form-label">Club</label>
+                            <select class="form-select" id="editClub" required>
+                                <option value="">Seleccione un club</option>
+                                <option value="Enmanuel">Enmanuel</option>
+                                <option value="Estrellitas de Jesús">Estrellitas de Jesús</option>
+                                <option value="Pequeños Héroes de la Fe">Pequeños Héroes de la Fe</option>
+                                <option value="Soldaditos de Jesús">Soldaditos de Jesús</option>
+                                <option value="Pequeños Pioneros">Pequeños Pioneros</option>
+                                <option value="Soldaditos del Rey">Soldaditos del Rey</option>
+                                <option value="Oejitas de Jesús">Oejitas de Jesús</option>
+                                <option value="Geuel">Geuel</option>
+                                <option value="Hormigitas Laboriosas">Hormigitas Laboriosas</option>
+                                <option value="Luz de Siloé">Luz de Siloé</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editFecha" class="form-label">Fecha</label>
+                            <input type="date" class="form-control" id="editFecha" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editEvidencia" class="form-label">Nueva Evidencia (opcional)</label>
+                            <input type="file" class="form-control" id="editEvidencia" accept="image/*,application/pdf">
+                            <div id="editVistaPrevia" class="mt-2">
+                                <div id="editImagenPrevia" class="evidencia-preview"></div>
+                                <div id="editPdfPrevia" style="display: none;">
+                                    <i class="fas fa-file-pdf" style="font-size: 48px; color: #dc3545;"></i>
+                                    <p id="editNombreArchivo" class="mt-2"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editLinkEvidencias" class="form-label">Link Evidencias</label>
+                            <input type="text" class="form-control" id="editLinkEvidencias" placeholder="Ingrese el enlace de evidencias adicionales">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editObservaciones" class="form-label">Observaciones</label>
+                            <textarea class="form-control" id="editObservaciones" rows="3" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="actualizarRegistro()">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script>
+        // Función para verificar si el usuario es administrador
+        function isAdmin() {
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (!currentUser) return false;
+            return JSON.parse(currentUser).role === 'admin';
+        }
+
+        // Función para verificar permisos antes de editar
+        function editarRegistro(id) {
+            if (!isAdmin()) {
+                alert('Solo los administradores pueden editar registros');
+                return;
+            }
+            const registros = JSON.parse(localStorage.getItem('registrosDocumentacion')) || [];
+            const registro = registros.find(r => r.id === id);
+            if (registro) {
+                document.getElementById('editId').value = registro.id;
+                document.getElementById('editCategoria').value = registro.categoria;
+                document.getElementById('editClub').value = registro.club;
+                document.getElementById('editFecha').value = registro.fecha;
+                document.getElementById('editLinkEvidencias').value = registro.linkEvidencias || '';
+                document.getElementById('editObservaciones').value = registro.observaciones;
+                new bootstrap.Modal(document.getElementById('editModal')).show();
+            }
+        }
+
+        // Función para verificar permisos antes de eliminar
+        function eliminarRegistro(id) {
+            if (!isAdmin()) {
+                alert('Solo los administradores pueden eliminar registros');
+                return;
+            }
+            if (confirm('¿Está seguro de que desea eliminar este registro?')) {
+                let registros = JSON.parse(localStorage.getItem('registrosDocumentacion')) || [];
+                registros = registros.filter(r => r.id !== id);
+                localStorage.setItem('registrosDocumentacion', JSON.stringify(registros));
+                cargarRegistros();
+            }
+        }
+        // Función para descargar evidencia
+        function descargarEvidencia(id) {
+            const registros = JSON.parse(localStorage.getItem('registrosDocumentacion')) || [];
+            const registro = registros.find(r => r.id === id);
+            
+            if (registro && registro.evidencia) {
+                const link = document.createElement('a');
+                link.href = registro.evidencia;
+                link.download = `evidencia_${registro.categoria}_${registro.club}_${registro.fecha}.${registro.evidencia.startsWith('data:application/pdf') ? 'pdf' : 'png'}`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+
+        // Función para cambiar el estado de entregado
+        function toggleEntregado(id) {
+            const registros = JSON.parse(localStorage.getItem('registrosDocumentacion')) || [];
+            const index = registros.findIndex(r => r.id === id);
+            
+            if (index !== -1) {
+                registros[index].entregado = !registros[index].entregado;
+                localStorage.setItem('registrosDocumentacion', JSON.stringify(registros));
+                cargarRegistros();
+            }
+        }
+        // Funciones para manejar la vista previa de imágenes
+        function mostrarVistaPrevia(input) {
+            const vistaPrevia = document.getElementById('vistaPrevia');
+            const imagenPrevia = document.getElementById('imagenPrevia');
+            const pdfPrevia = document.getElementById('pdfPrevia');
+            const nombreArchivo = document.getElementById('nombreArchivo');
+
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const reader = new FileReader();
+
+                if (file.type === 'application/pdf') {
+                    imagenPrevia.style.display = 'none';
+                    pdfPrevia.style.display = 'block';
+                    nombreArchivo.textContent = file.name;
+                    vistaPrevia.style.display = 'block';
+                    reader.onload = function(e) {
+                        // Almacenar el contenido del PDF para su posterior uso
+                        vistaPrevia.dataset.pdfContent = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                } else if (file.type.startsWith('image/')) {
+                    reader.onload = function(e) {
+                        imagenPrevia.style.display = 'block';
+                        pdfPrevia.style.display = 'none';
+                        imagenPrevia.innerHTML = `<img src="${e.target.result}" alt="Vista previa" class="evidencia-preview">`;
+                        vistaPrevia.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        }
+
+        // Función para guardar un nuevo registro
+        async function validarFormulario() {
+            const form = document.getElementById('registroForm');
+            const categoria = document.getElementById('categoria');
+            const club = document.getElementById('club');
+            const fecha = document.getElementById('fecha');
+            const evidencia = document.getElementById('evidencia');
+            const observaciones = document.getElementById('observaciones');
+
+            // Validar categoría
+            if (!categoria.value) {
+                categoria.setCustomValidity('Por favor seleccione una categoría');
+            } else {
+                categoria.setCustomValidity('');
+            }
+
+            // Validar club
+            if (!club.value) {
+                club.setCustomValidity('Por favor seleccione un club');
+            } else {
+                club.setCustomValidity('');
+            }
+
+            // Validar fecha
+            if (!fecha.value) {
+                fecha.setCustomValidity('Por favor seleccione una fecha');
+            } else {
+                const fechaSeleccionada = new Date(fecha.value);
+                const hoy = new Date();
+                if (fechaSeleccionada > hoy) {
+                    fecha.setCustomValidity('La fecha no puede ser futura');
+                } else {
+                    fecha.setCustomValidity('');
+                }
+            }
+
+            // Validar evidencia
+            if (evidencia.files && evidencia.files.length > 0) {
+                const file = evidencia.files[0];
+                const fileType = file.type;
+                const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
+                if (!validTypes.includes(fileType)) {
+                    evidencia.setCustomValidity('Por favor seleccione una imagen (JPEG, PNG, GIF) o un PDF');
+                } else if (file.size > 5 * 1024 * 1024) { // 5MB
+                    evidencia.setCustomValidity('El archivo no debe superar los 5MB');
+                } else {
+                    evidencia.setCustomValidity('');
+                }
+            } else {
+                evidencia.setCustomValidity('');
+            }
+
+            // Validar observaciones
+            if (!observaciones.value.trim()) {
+                observaciones.setCustomValidity('Por favor ingrese las observaciones');
+            } else if (observaciones.value.length < 10) {
+                observaciones.setCustomValidity('Las observaciones deben tener al menos 10 caracteres');
+            } else {
+                observaciones.setCustomValidity('');
+            }
+
+            form.classList.add('was-validated');
+            return form.checkValidity();
+        }
+
+        async function guardarRegistro(event) {
+            event.preventDefault();
+            
+            if (!await validarFormulario()) {
+                return;
+            }
+            
+            const evidenciaFile = document.getElementById('evidencia').files[0];
+            const registro = {
+                id: Date.now(),
+                categoria: document.getElementById('categoria').value,
+                club: document.getElementById('club').value,
+                fecha: document.getElementById('fecha').value,
+                evidencia: '',
+                linkEvidencias: document.getElementById('linkEvidencias').value,
+                observaciones: document.getElementById('observaciones').value,
+                entregado: false
+            };
+
+            if (evidenciaFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    registro.evidencia = e.target.result;
+                    guardarRegistroFinal(registro);
+                };
+                reader.readAsDataURL(evidenciaFile);
+            } else {
+                guardarRegistroFinal(registro);
+            }
+        }
+
+        function guardarRegistroFinal(registro) {
+            let registros = JSON.parse(localStorage.getItem('registrosDocumentacion')) || [];
+            registros.push(registro);
+            localStorage.setItem('registrosDocumentacion', JSON.stringify(registros));
+
+            document.getElementById('registroForm').reset();
+            document.getElementById('vistaPrevia').style.display = 'none';
+            cargarRegistros();
+            alert('Registro guardado exitosamente');
+        }
+
+        // Función para cargar los registros en la tabla
+        function cargarRegistros() {
+            const registros = JSON.parse(localStorage.getItem('registrosDocumentacion')) || [];
+            const tabla = document.getElementById('registrosTabla');
+            tabla.innerHTML = '';
+            const esAdmin = isAdmin();
+
+            registros.forEach(registro => {
+                const fila = document.createElement('tr');
+                fila.innerHTML = `
+                    <td>${registro.categoria}</td>
+                    <td>${registro.club}</td>
+                    <td>${registro.fecha}</td>
+                    <td>
+                        <div class="d-flex flex-column align-items-center">
+                            ${registro.evidencia.startsWith('data:application/pdf') ?
+                                `<i class="fas fa-file-pdf" style="font-size: 24px; color: #dc3545; cursor: pointer;" onclick="window.open('${registro.evidencia}', '_blank')"></i>` :
+                                `<img src="${registro.evidencia}" class="evidencia-preview" alt="Evidencia" style="cursor: pointer;" onclick="window.open('${registro.evidencia}', '_blank')">`
+                            }
+                            <button class="btn btn-sm btn-info mt-1" onclick="descargarEvidencia(${registro.id})"><i class="fas fa-download"></i></button>
+                        </div>
+                    </td>
+                    <td>
+                        ${registro.linkEvidencias ? `<a href="${registro.linkEvidencias}" target="_blank" class="btn btn-sm btn-link"><i class="fas fa-external-link-alt"></i> Ver enlace</a>` : ''}
+                    </td>
+                    <td>${registro.observaciones}</td>
+                    <td>
+                        <button class="btn btn-sm ${registro.entregado ? 'btn-success' : 'btn-warning'}" onclick="toggleEntregado(${registro.id})">
+                            ${registro.entregado ? '<i class="fas fa-check"></i> Entregado' : '<i class="fas fa-clock"></i> Pendiente'}
+                        </button>
+                    </td>
+                    <td>
+                        ${esAdmin ? `
+                            <button class="btn btn-sm btn-primary" onclick="editarRegistro(${registro.id})">Editar</button>
+                            <button class="btn btn-sm btn-danger" onclick="eliminarRegistro(${registro.id})">Eliminar</button>
+                        ` : ''}
+                    </td>
+                `;
+                tabla.appendChild(fila);
+            });
+        }
+
+        // Función para editar un registro
+        function editarRegistro(id) {
+            const registros = JSON.parse(localStorage.getItem('registrosDocumentacion')) || [];
+            const registro = registros.find(r => r.id === id);
+            if (registro) {
+                document.getElementById('editId').value = registro.id;
+                document.getElementById('editCategoria').value = registro.categoria;
+                document.getElementById('editClub').value = registro.club;
+                document.getElementById('editFecha').value = registro.fecha;
+                document.getElementById('editLinkEvidencias').value = registro.linkEvidencias || '';
+                document.getElementById('editObservaciones').value = registro.observaciones;
+                document.getElementById('editImagenPrevia').src = registro.evidencia;
+                new bootstrap.Modal(document.getElementById('editModal')).show();
+            }
+        }
+
+        // Función para actualizar un registro
+        function actualizarRegistro() {
+            const id = parseInt(document.getElementById('editId').value);
+            const evidenciaFile = document.getElementById('editEvidencia').files[0];
+
+            const procesarActualizacion = (evidenciaBase64) => {
+                const registros = JSON.parse(localStorage.getItem('registrosDocumentacion')) || [];
+                const index = registros.findIndex(r => r.id === id);
+
+                if (index !== -1) {
+                    registros[index] = {
+                        ...registros[index],
+                        categoria: document.getElementById('editCategoria').value,
+                        club: document.getElementById('editClub').value,
+                        fecha: document.getElementById('editFecha').value,
+                        linkEvidencias: document.getElementById('editLinkEvidencias').value,
+                        observaciones: document.getElementById('editObservaciones').value,
+                        evidencia: evidenciaBase64 || registros[index].evidencia
+                    };
+
+                    localStorage.setItem('registrosDocumentacion', JSON.stringify(registros));
+                    bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+                    cargarRegistros();
+                    alert('Registro actualizado exitosamente');
+                }
+            };
+
+            if (evidenciaFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    procesarActualizacion(e.target.result);
+                };
+                reader.readAsDataURL(evidenciaFile);
+            } else {
+                procesarActualizacion(null);
+            }
+        }
+
+        // Función para eliminar un registro
+        function eliminarRegistro(id) {
+            if (confirm('¿Está seguro de que desea eliminar este registro?')) {
+                let registros = JSON.parse(localStorage.getItem('registrosDocumentacion')) || [];
+                registros = registros.filter(r => r.id !== id);
+                localStorage.setItem('registrosDocumentacion', JSON.stringify(registros));
+                cargarRegistros();
+                alert('Registro eliminado exitosamente');
+            }
+        }
+
+        // Cargar registros al iniciar la página
+        document.addEventListener('DOMContentLoaded', cargarRegistros);
+    </script>
+</body>
+</html>

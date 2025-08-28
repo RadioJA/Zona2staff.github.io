@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registros de Conquistadores</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        :root {
+            --abejitas-color: #FFD700;
+            --primary-color: #4A90E2;
+        }
+        .navbar {
+            background-color: var(--abejitas-color);
+        }
+        .welcome-section {
+            text-align: center;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        .search-box {
+            margin-bottom: 1.5rem;
+        }
+        .table-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1rem;
+        }
+        .btn-export {
+            background-color: var(--abejitas-color);
+            border: none;
+            color: #000;
+        }
+        .btn-export:hover {
+            background-color: #e6c200;
+            color: #000;
+        }
+        .table th {
+            cursor: pointer;
+        }
+        .table th:hover {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">Aventureros</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="..//Conquistadores/secret_conquist.html">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Registros</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="welcome-section">
+            <h1>Registros de Miembros</h1>
+            <p class="text-muted">Gestión y visualización de registros del Club de Aventureros</p>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="search-box">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Buscar miembro...">
+                </div>
+            </div>
+            <div class="col-md-6 text-end">
+                <button class="btn btn-export" onclick="exportToPDF()">
+                    <i class="fas fa-file-pdf me-2"></i>Exportar a PDF
+                </button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="mb-3">
+                <button class="btn btn-primary" onclick="openCreateModal()">
+                    <i class="fas fa-plus me-2"></i>Nuevo Registro
+                </button>
+            </div>
+            <table class="table table-hover" id="membersTable">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable(0)">Nombre <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable(1)">Fecha Nacimiento <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable(2)">Edad <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable(3)">Alergias <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable(4)">Clase <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable(5)">Padre/Madre <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable(6)">Teléfono <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable(7)">Club <i class="fas fa-sort"></i></th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+
+            <!-- Modal para Crear/Editar -->
+            <div class="modal fade" id="memberModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalTitle">Nuevo Registro</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="memberForm">
+                                <input type="hidden" id="editIndex">
+                                <div class="mb-3">
+                                    <label for="nombre" class="form-label">Nombre</label>
+                                    <input type="text" class="form-control" id="nombre" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento</label>
+                                    <input type="date" class="form-control" id="fechaNacimiento" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="edad" class="form-label">Edad</label>
+                                    <input type="number" class="form-control" id="edad" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">¿Es alérgico?</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="alergico" value="si" id="alergicoSi">
+                                        <label class="form-check-label" for="alergicoSi">Sí</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="alergico" value="no" id="alergicoNo" checked>
+                                        <label class="form-check-label" for="alergicoNo">No</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3" id="alergiasField" style="display: none;">
+                                    <label for="alergias" class="form-label">Especifique las alergias</label>
+                                    <input type="text" class="form-control" id="alergias">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="clase" class="form-label">Clase</label>
+                                    <select class="form-control" id="clase" required>
+                                        <option value="">Seleccione una clase</option>
+                                        <option value="Abejitas">Abejitas</option>
+                                        <option value="Rayitos">Rayitos</option>
+                                        <option value="Constructores">Constructores</option>
+                                        <option value="Manos Ayudadoras">Manos Ayudadoras</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="padre" class="form-label">Padre/Madre</label>
+                                    <input type="text" class="form-control" id="padre">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="telefono" class="form-label">Teléfono</label>
+                                    <input type="tel" class="form-control" id="telefono">
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-primary" onclick="saveMember()">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let memberModal;
+        document.addEventListener('DOMContentLoaded', () => {
+            loadRecords();
+            memberModal = new bootstrap.Modal(document.getElementById('memberModal'));
+            
+            // Manejar cambio en radio button de alergias
+            document.querySelectorAll('input[name="alergico"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    document.getElementById('alergiasField').style.display = 
+                        this.value === 'si' ? 'block' : 'none';
+                });
+            });
+        });
+
+        function loadRecords() {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'dr-aventureros')) {
+                window.location.href = '../Login/index.html';
+                return;
+            }
+
+            fetch('../../database/obtener_miembros.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ user: currentUser })
+            })
+            .then(response => response.json())
+            .then(data => {
+                let records = data.records || [];
+                // Filtrar registros si no es admin
+                if (currentUser.role !== 'admin') {
+                    records = records.filter(record => record.createdBy === currentUser.username);
+                }
+                const tableBody = document.getElementById('tableBody');
+                tableBody.innerHTML = '';
+                const isAdmin = currentUser.role === 'admin';
+                records.forEach((record, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${record.nombre}</td>
+                        <td>${record.fechaNacimiento}</td>
+                        <td>${record.edad}</td>
+                        <td>${record.alergico === 'si' ? record.alergias : 'No'}</td>
+                        <td>${record.clase || '-'}</td>
+                        <td>${record.padre || '-'}</td>
+                        <td>${record.telefono || '-'}</td>
+                        <td>${record.club || 'Aventureros'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="editMember(${index})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            ${isAdmin ? `
+                            <button class="btn btn-sm btn-danger" onclick="deleteMember(${index})">
+                                <i class="fas fa-trash"></i>
+                            </button>` : ''}
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            });
+        }
+
+        function openCreateModal() {
+            document.getElementById('memberForm').reset();
+            document.getElementById('editIndex').value = '';
+            document.getElementById('modalTitle').textContent = 'Nuevo Registro';
+            document.getElementById('alergiasField').style.display = 'none';
+            memberModal.show();
+        }
+
+        function editMember(index) {
+            const records = JSON.parse(localStorage.getItem('miembros')) || [];
+            const record = records[index];
+            
+            document.getElementById('editIndex').value = index;
+            document.getElementById('nombre').value = record.nombre;
+            document.getElementById('fechaNacimiento').value = record.fechaNacimiento;
+            document.getElementById('edad').value = record.edad;
+            document.getElementById(record.alergico === 'si' ? 'alergicoSi' : 'alergicoNo').checked = true;
+            document.getElementById('alergiasField').style.display = record.alergico === 'si' ? 'block' : 'none';
+            document.getElementById('alergias').value = record.alergias || '';
+            document.getElementById('clase').value = record.clase || '';
+            document.getElementById('padre').value = record.padre || '';
+            document.getElementById('telefono').value = record.telefono || '';
+            
+            document.getElementById('modalTitle').textContent = 'Editar Registro';
+            memberModal.show();
+        }
+
+        function deleteMember(index) {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            if (currentUser.role !== 'admin') {
+                alert('Solo los administradores pueden eliminar registros.');
+                return;
+            }
+            if (confirm('¿Está seguro de que desea eliminar este registro?')) {
+                const records = JSON.parse(localStorage.getItem('miembros')) || [];
+                records.splice(index, 1);
+                localStorage.setItem('miembros', JSON.stringify(records));
+                loadRecords();
+            }
+        }
+
+        function saveMember() {
+            const form = document.getElementById('memberForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const editIndex = document.getElementById('editIndex').value;
+            const records = JSON.parse(localStorage.getItem('miembros')) || [];
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            
+            const member = {
+                nombre: document.getElementById('nombre').value,
+                fechaNacimiento: document.getElementById('fechaNacimiento').value,
+                edad: document.getElementById('edad').value,
+                alergico: document.querySelector('input[name="alergico"]:checked').value,
+                alergias: document.getElementById('alergias').value,
+                clase: document.getElementById('clase').value,
+                padre: document.getElementById('padre').value,
+                telefono: document.getElementById('telefono').value,
+                club: 'Aventureros',
+                createdBy: currentUser.username
+            };
+
+            if (editIndex === '') {
+                records.push(member);
+            } else {
+                records[editIndex] = member;
+            }
+
+            localStorage.setItem('miembros', JSON.stringify(records));
+            memberModal.hide();
+            loadRecords();
+        }
+
+        // Función de búsqueda
+        document.getElementById('searchInput').addEventListener('keyup', function() {
+            const searchText = this.value.toLowerCase();
+            const rows = document.getElementById('tableBody').getElementsByTagName('tr');
+
+            Array.from(rows).forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchText) ? '' : 'none';
+            });
+        });
+
+        // Función para ordenar la tabla
+        function sortTable(n) {
+            const table = document.getElementById('membersTable');
+            let rows, switching, i, x, y, shouldSwitch, dir = 'asc';
+            let switchcount = 0;
+            switching = true;
+
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+
+                for (i = 1; i < rows.length - 1; i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName('td')[n];
+                    y = rows[i + 1].getElementsByTagName('td')[n];
+
+                    if (dir === 'asc') {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir === 'desc') {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    switchcount++;
+                } else {
+                    if (switchcount === 0 && dir === 'asc') {
+                        dir = 'desc';
+                        switching = true;
+                    }
+                }
+            }
+        }
+
+        // Función para exportar a PDF
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const table = document.getElementById('membersTable');
+
+            doc.text('Registros de Miembros - Club de Aventureros', 14, 15);
+            doc.autoTable({ html: table, startY: 25 });
+            doc.save('registros-aventureros.pdf');
+        }
+    </script>
+</body>
+</html>

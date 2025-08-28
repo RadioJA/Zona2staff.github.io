@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema de Control</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            max-width: 350px;
+            width: 85%;
+            transition: transform 0.3s ease;
+        }
+        .login-container:hover {
+            transform: translateY(-5px);
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        .login-header h2 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        .login-header p {
+            color: #7f8c8d;
+        }
+        .form-label {
+            color: #34495e;
+            font-weight: 500;
+        }
+        .form-control {
+            border: 2px solid #e0e0e0;
+            padding: 0.75rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #6e8efb;
+            box-shadow: 0 0 0 0.2rem rgba(110, 142, 251, 0.25);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            border: none;
+            padding: 0.75rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(110, 142, 251, 0.4);
+        }
+        .alert-danger {
+            background-color: #fff5f5;
+            border-color: #feb2b2;
+            color: #c53030;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <img src="ZONA_2.png" alt="Logo Zona 2" class="logo mb-3" style="width: 150px; height: 105px;">
+            <h2>Iniciar Sesión</h2>
+            <p class="text-muted">Ingrese sus credenciales</p>
+        </div>
+        <form id="loginForm" onsubmit="return handleLogin(event)">
+            <div class="mb-3">
+                <label for="username" class="form-label">Usuario</label>
+                <input type="text" class="form-control" id="username" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" class="form-control" id="password" required>
+            </div>
+            <div id="loginError" class="alert alert-danger d-none" role="alert">
+                Credenciales inválidas
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Ingresar</button>
+        </form>
+    </div>
+
+    <script>
+        // Base de datos simulada de usuarios
+        const users = [
+
+            // Admin
+            { username: 'Natanael', password: 'admin', role: 'admin' },
+            { username: 'Carmen', password: 'cdlda', role: 'admin' },
+            { username: 'Ezequiel', password: 'edldg', role: 'admin' },
+            
+
+
+            // Dr. Aventureros
+            { username: 'Heudrick', password: 'hsda', role: 'dr-aventureros' },
+            { username: 'Aventureros', password: '1234', role: 'dr-aventureros' },
+            { username: 'Aventureros1', password: '1234', role: 'dr-aventureros' }, 
+            { username: 'Aventureros2', password: '1234', role: 'dr-aventureros' },
+
+
+            // Dr. Conquistador
+            { username: 'Juan', password: 'jhdc', role: 'dr-conquistador' },
+            { username: 'Conquistador1', password: '1234', role: 'dr-conquistador' },
+
+            // Dr. Guias
+            { username: 'Guias', password: '1234', role: 'dr-guias' },
+            { username: 'Guias1', password: '1234', role: 'dr-guias' },
+            { username: 'Guias2', password: '1234', role: 'dr-guias' }
+
+
+        ];
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorElement = document.getElementById('loginError');
+
+            const user = users.find(u => u.username === username && u.password === password);
+
+            if (user) {
+                // Guardar información del usuario en sessionStorage
+                sessionStorage.setItem('currentUser', JSON.stringify({
+                    username: user.username,
+                    role: user.role
+                }));
+
+                // Redirigir según el rol
+                switch(user.role) {
+                    case 'admin':
+                        window.location.href = 'admin.html';
+                        break;
+                    case 'dr-aventureros':
+                        window.location.href = 'Aventureros/index_avent.html';
+                        break;
+                    case 'dr-conquistador':
+                        window.location.href = 'Conquistadores/index.html';
+                        break;
+                    case 'dr-guias':
+                        window.location.href = 'Conquistadores/index.html';
+                        break;
+                }
+            } else {
+                errorElement.classList.remove('d-none');
+                setTimeout(() => {
+                    errorElement.classList.add('d-none');
+                }, 3000);
+            }
+
+            return false;
+        }
+
+        // Verificar si ya hay una sesión activa
+        window.onload = function() {
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (currentUser) {
+                const user = JSON.parse(currentUser);
+                switch(user.role) {
+                    case 'admin':
+                        window.location.href = 'admin.html';
+                        break;
+                    case 'dr-aventureros':
+                        window.location.href = 'Aventureros/index_avent.html';
+                        break;
+                    case 'dr-conquistador':
+                        window.location.href = 'Conquistadores/index.html';
+                        break;
+                    case 'dr-guias':
+                        window.location.href = 'Guias/index.html';
+                        break;
+                }
+            }
+        };
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

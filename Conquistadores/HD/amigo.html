@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen de Historia Denominacional de Amigo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .quiz-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 20px;
+        }
+        .question-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .option-btn {
+            width: 100%;
+            text-align: left;
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            background-color: white;
+            transition: all 0.3s;
+        }
+        .option-btn:hover {
+            background-color: #e9ecef;
+        }
+        .option-btn.correct {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .option-btn.incorrect {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .result-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .progress {
+            height: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container quiz-container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <a href="indexHD.html" class="btn btn-outline-primary"><i class="fas fa-arrow-left"></i> Volver al Menú</a>
+            <h1 class="text-center mb-0">Examen de Historia Denominacional de Amigo</h1>
+            <button id="showResultsBtn" class="btn btn-info" onclick="showAllResults()" style="display: none;">Ver Resultados</button>
+        </div>
+
+        <div id="registrationForm" class="card p-4 mb-4">
+            <h3 class="mb-3">Registro de Estudiante</h3>
+            <div class="mb-3">
+                <label for="studentName" class="form-label">Nombre Completo</label>
+                <input type="text" class="form-control" id="studentName" required>
+            </div>
+            <div class="mb-3">
+                <label for="clubName" class="form-label">Club</label>
+                <input type="text" class="form-control" id="clubName" required>
+            </div>
+            <button class="btn btn-primary" onclick="startQuiz()">Comenzar Examen</button>
+        </div>
+        <div class="progress">
+            <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <div id="quiz"></div>
+        <div class="result-container" style="display: none;">
+            <h2>Resultados del Examen</h2>
+            <p>Puntuación: <span id="score">0</span> de 100</p>
+            <button class="btn btn-primary" onclick="restartQuiz()">Intentar de nuevo</button>
+            <button class="btn btn-secondary" onclick="reviewAnswers()">Revisar respuestas</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script>
+        const questions = [
+            {
+                question: "¿Qué les dijeron los ángeles a los discípulos después de la ascensión de Cristo?",
+                options: ["Que oraran sin cesar", "Que Jesús no volvería", "Que Jesús vendría de la misma manera", "Que el Espíritu Santo ya había venido"],
+                correct: 2
+            },
+            {
+                question: "¿Qué ocurrió cuando el Espíritu Santo descendió a los discípulos?",
+                options: ["Se dispersaron por miedo", "Comenzaron a predicar valientemente", "Escribieron los evangelios", "Se escondieron en Jerusalén"],
+                correct: 1
+            },
+            {
+                question: "¿Cuántas personas se bautizaron el día del Pentecostés según la predicación de Pedro?",
+                options: ["500", "1,000", "2,000", "3,000"],
+                correct: 3
+            },
+            {
+                question: "¿Quién era el emperador que se gozaba viendo a los cristianos ser despedazados por caballos?",
+                options: ["Nerón", "Tiberio", "Marco Aurelio", "Constantino"],
+                correct: 0
+            },
+            {
+                question: "¿Dónde se refugiaban los cristianos perseguidos?",
+                options: ["En barcos", "En cuevas", "En templos", "En desiertos"],
+                correct: 1
+            },
+            {
+                question: "¿Qué le ocurrió a Saulo de Tarso en el camino a Damasco?",
+                options: ["Fue arrestado", "Se perdió", "Se convirtió tras ver a Jesús", "Se escondió de los cristianos"],
+                correct: 2
+            },
+            {
+                question: "¿Cuál fue el nuevo nombre de Saulo después de su conversión?",
+                options: ["Esteban", "Pedro", "Pablo", "Andrés"],
+                correct: 2
+            },
+            {
+                question: "¿Qué joven misionero llevó el evangelio a Inglaterra e Irlanda?",
+                options: ["Juan", "Marcos", "Patrick", "Timoteo"],
+                correct: 2
+            },
+            {
+                question: "¿Qué evento hizo que el cristianismo creciera en Roma?",
+                options: ["El fin del imperio", "La caída del templo", "La decadencia del paganismo", "La muerte del papa"],
+                correct: 2
+            },
+            {
+                question: "¿Qué día pagano fue reemplazado por la Navidad cristiana?",
+                options: ["31 de octubre", "21 de junio", "25 de diciembre", "14 de febrero"],
+                correct: 2
+            },
+            {
+                question: "¿Qué combinación surgió en el año 538 d.C. que fortaleció el poder del papa?",
+                options: ["Iglesia con política", "Iglesia con ejército", "Iglesia con estado", "Iglesia con comercio"],
+                correct: 2
+            },
+            {
+                question: "¿Quiénes eran los Valdenses?",
+                options: ["Paganos conversos", "Reformadores franceses", "Fieles que guardaban la fe en Jesús", "Apóstoles modernos"],
+                correct: 2
+            },
+            {
+                question: "¿Qué mantenían los Valdenses encendido durante la edad oscura?",
+                options: ["El evangelio", "La luz de la reforma", "La llama de la verdad", "El fuego de la persecución"],
+                correct: 2
+            },
+            {
+                question: "¿Qué gran reformador fue quemado en la hoguera en 1415?",
+                options: ["Lutero", "Huss", "Calvino", "Zwinglio"],
+                correct: 1
+            },
+            {
+                question: "¿Qué frase repetía Huss mientras era quemado?",
+                options: ["Dios mío, ¿por qué me has abandonado?", "¡Viva la reforma!", "Jesús, hijo de David, ten misericordia de mí", "El justo por la fe vivirá"],
+                correct: 2
+            },
+            {
+                question: "¿En qué países se guardaba el sábado en el siglo XV?",
+                options: ["Francia, Italia, Grecia", "Inglaterra, Escocia, Alemania", "Noruega, España, Rusia", "Egipto, Israel, Turquía"],
+                correct: 1
+            },
+            {
+                question: "¿Quién fue llamado la estrella matutina de la reforma?",
+                options: ["Lutero", "Wesley", "Wicleff", "Knox"],
+                correct: 2
+            },
+            {
+                question: "¿Qué versículo impactó a Martín Lutero profundamente?",
+                options: ["Todo lo puedo en Cristo", "El justo vivirá por la fe", "Amarás a tu prójimo", "No temas, yo estoy contigo"],
+                correct: 1
+            },
+            {
+                question: "¿Cuántas tesis clavó Lutero en la puerta de la iglesia?",
+                options: ["50", "95", "70", "40"],
+                correct: 1
+            },
+            {
+                question: "¿Qué tribunal juzgó a Lutero en 1521?",
+                options: ["Concilio de Trento", "Dieta de Worms", "Corte Papal", "Asamblea de Roma"],
+                correct: 1
+            },
+            {
+                question: "¿Qué nombre recibieron quienes protestaban contra Roma?",
+                options: ["Luteros", "Católicos", "Protestantes", "Reformistas"],
+                correct: 2
+            },
+            {
+                question: "¿Quiénes fueron los otros líderes reformadores además de Lutero?",
+                options: ["Esteban y Pedro", "Juan y Marcos", "Zwinglio y Calvino", "Huss y Wesley"],
+                correct: 2
+            },
+            {
+                question: "¿Qué país se convirtió en centro del protestantismo?",
+                options: ["España", "Suiza", "Italia", "Inglaterra"],
+                correct: 1
+            },
+            {
+                question: "¿Qué reformadores ingleses fueron quemados en la estaca?",
+                options: ["Lutero y Calvino", "Wicleff y Huss", "Latimer y Ridley", "Knox y Patrick"],
+                correct: 2
+            },
+            {
+                question: "¿Qué predicador hizo temblar a la reina de Inglaterra con su mensaje?",
+                options: ["Calvino", "Lutero", "Knox", "Wicleff"],
+                correct: 2
+            },
+            {
+                question: "¿Qué ocurrió con las dos Margaritas en Wingtown?",
+                options: ["Fueron exiliadas", "Fueron quemadas", "Fueron ahogadas", "Fueron perdonadas"],
+                correct: 2
+            },
+            {
+                question: "¿Quién dijo: 'con Cristo estoy juntamente crucificada'?",
+                options: ["Margarita la mayor", "Margarita la menor", "Lutero", "Wesley"],
+                correct: 0
+            },
+            {
+                question: "¿Qué predicador viajó por toda Inglaterra predicando al aire libre?",
+                options: ["Wicleff", "Wesley", "Huss", "Patrick"],
+                correct: 1
+            },
+            {
+                question: "¿Qué papa fue capturado en 1798?",
+                options: ["Pío VI", "Juan Pablo", "Virgilio", "León XIII"],
+                correct: 0
+            },
+            {
+                question: "¿Qué señales acompañaron el tiempo del fin?",
+                options: ["Hambres y guerras", "Enfermedades", "Terremotos y fenómenos celestiales", "Lluvias de fuego"],
+                correct: 2
+            },
+            {
+                question: "¿En qué año ocurrió el gran terremoto de Lisboa?",
+                options: ["1776", "1755", "1780", "1833"],
+                correct: 1
+            },
+            {
+                question: "¿Qué evento ocurrió el 13 de noviembre de 1833?",
+                options: ["Luna roja", "Gran terremoto", "Oscurecimiento del sol", "Caída de estrellas"],
+                correct: 3
+            },
+            {
+                question: "¿Qué deben hacer los conquistadores según el mensaje final?",
+                options: ["Guardar el sábado", "Predicar el mensaje del advenimiento", "Huir a las montañas", "Leer la Biblia en secreto"],
+                correct: 1
+            },
+            {
+                question: "¿Qué grupo fue usado por Dios en Suecia para predicar?",
+                options: ["Monjes", "Pastores", "Niños", "Mujeres mayores"],
+                correct: 2
+            },
+            {
+                question: "¿Qué campesino comenzó la historia del Adventismo del Séptimo Día?",
+                options: ["John Wesley", "Patrick", "Guillermo Miller", "Juan Knox"],
+                correct: 2
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answers = [];
+        let studentData = null;
+        
+        // Ocultar el quiz inicialmente
+        document.getElementById('quiz').style.display = 'none';
+        document.querySelector('.progress').style.display = 'none';
+
+        function startQuiz() {
+            const name = document.getElementById('studentName').value.trim();
+            const club = document.getElementById('clubName').value.trim();
+
+            if (!name || !club) {
+                alert('Por favor, complete todos los campos');
+                return;
+            }
+
+            studentData = { name, club };
+            document.getElementById('registrationForm').style.display = 'none';
+            document.getElementById('quiz').style.display = 'block';
+            document.querySelector('.progress').style.display = 'block';
+            document.getElementById('showResultsBtn').style.display = 'block';
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            const questionData = questions[currentQuestion];
+            const quizContainer = document.getElementById('quiz');
+            const progress = (currentQuestion / questions.length) * 100;
+
+            document.querySelector('.progress-bar').style.width = `${progress}%`;
+            document.querySelector('.progress-bar').setAttribute('aria-valuenow', progress);
+
+            let html = `
+                <div class="question-card">
+                    <h3 class="mb-4">Pregunta ${currentQuestion + 1} de ${questions.length}</h3>
+                    <p class="h5 mb-4">${questionData.question}</p>
+                    <div class="options">
+            `;
+
+            questionData.options.forEach((option, index) => {
+                html += `
+                    <button class="option-btn" onclick="selectAnswer(${index})">
+                        ${option}
+                    </button>
+                `;
+            });
+
+            html += `
+                    </div>
+                </div>
+            `;
+
+            quizContainer.innerHTML = html;
+        }
+
+        function selectAnswer(optionIndex) {
+            const questionData = questions[currentQuestion];
+            const buttons = document.querySelectorAll('.option-btn');
+            
+            buttons.forEach(button => button.disabled = true);
+            
+            if (optionIndex === questionData.correct) {
+                buttons[optionIndex].classList.add('correct');
+                score++;
+            } else {
+                buttons[optionIndex].classList.add('incorrect');
+                buttons[questionData.correct].classList.add('correct');
+            }
+
+            answers.push(optionIndex);
+
+            setTimeout(() => {
+                currentQuestion++;
+                if (currentQuestion < questions.length) {
+                    displayQuestion();
+                } else {
+                    showResults();
+                }
+            }, 1500);
+        }
+
+        function showResults() {
+            const quizContainer = document.getElementById('quiz');
+            const resultContainer = document.querySelector('.result-container');
+            const scoreElement = document.getElementById('score');
+            
+            // Calcular puntuación sobre 100
+            const finalScore = Math.round((score / questions.length) * 100);
+
+            quizContainer.style.display = 'none';
+            resultContainer.style.display = 'block';
+            scoreElement.textContent = finalScore;
+
+            // Guardar resultado en localStorage
+            const result = {
+                ...studentData,
+                score,
+                totalQuestions: questions.length,
+                date: new Date().toISOString(),
+                answers
+            };
+
+            const results = JSON.parse(localStorage.getItem('quizResults') || '[]');
+            results.push(result);
+            localStorage.setItem('quizResults', JSON.stringify(results));
+        }
+
+        function reviewAnswers() {
+            const quizContainer = document.getElementById('quiz');
+            const resultContainer = document.querySelector('.result-container');
+            let html = '';
+
+            questions.forEach((question, index) => {
+                const userAnswer = answers[index];
+                html += `
+                    <div class="question-card">
+                        <h4>Pregunta ${index + 1}</h4>
+                        <p>${question.question}</p>
+                        <p>Tu respuesta: <span class="${userAnswer === question.correct ? 'text-success' : 'text-danger'}">
+                            ${question.options[userAnswer]}
+                        </span></p>
+                        <p>Respuesta correcta: <span class="text-success">
+                            ${question.options[question.correct]}
+                        </span></p>
+                    </div>
+                `;
+            });
+
+            quizContainer.innerHTML = html;
+            quizContainer.style.display = 'block';
+            resultContainer.style.display = 'none';
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            answers = [];
+            studentData = null;
+            const quizContainer = document.getElementById('quiz');
+            const resultContainer = document.querySelector('.result-container');
+            const registrationForm = document.getElementById('registrationForm');
+
+            quizContainer.style.display = 'none';
+            resultContainer.style.display = 'none';
+            registrationForm.style.display = 'block';
+            document.getElementById('studentName').value = '';
+            document.getElementById('clubName').value = '';
+            document.querySelector('.progress').style.display = 'none';
+            document.getElementById('showResultsBtn').style.display = 'none';
+        }
+
+        function deleteResult(club, index) {
+            if (!confirm('¿Está seguro de que desea eliminar este resultado?')) return;
+            
+            let results = JSON.parse(localStorage.getItem('quizResults') || '[]');
+            results = results.filter(result => !(result.club === club && results.indexOf(result) === index));
+            localStorage.setItem('quizResults', JSON.stringify(results));
+            showAllResults();
+        }
+
+        function deleteClubResults(club) {
+            if (!confirm(`¿Está seguro de que desea eliminar todos los resultados del club ${club}?`)) return;
+            
+            let results = JSON.parse(localStorage.getItem('quizResults') || '[]');
+            results = results.filter(result => result.club !== club);
+            localStorage.setItem('quizResults', JSON.stringify(results));
+            showAllResults();
+        }
+
+        function showAllResults() {
+            const results = JSON.parse(localStorage.getItem('quizResults') || '[]');
+            const quizContainer = document.getElementById('quiz');
+            const resultContainer = document.querySelector('.result-container');
+            const registrationForm = document.getElementById('registrationForm');
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+
+            if (!currentUser) {
+                alert('Debe iniciar sesión para ver los resultados');
+                return;
+            }
+
+            // Filtrar resultados según el rol del usuario
+            let filteredResults = currentUser.role === 'admin' ? 
+                results : 
+                results.filter(result => result.name === currentUser.username);
+
+            // Agrupar resultados por club
+            const resultsByClub = {};
+            filteredResults.forEach(result => {
+                if (!resultsByClub[result.club]) {
+                    resultsByClub[result.club] = [];
+                }
+                resultsByClub[result.club].push(result);
+            });
+
+            let html = `
+                <div class="results-list">
+                    <h2 class="mb-4">Resultados por Club</h2>
+                    <button class="btn btn-primary mb-3" onclick="printResults()">Imprimir Resultados</button>
+                    <button class="btn btn-success mb-3 ms-2" onclick="exportToPDF()">Exportar a PDF</button>
+                    <button class="btn btn-secondary mb-3 ms-2" onclick="location.reload()">Volver al Examen</button>
+            `;
+
+            for (const club in resultsByClub) {
+                html += `
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h3 class="mb-0">${club}</h3>
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Puntuación</th>
+                                        <th>Fecha</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                `;
+
+                resultsByClub[club].forEach(result => {
+                    const date = new Date(result.date).toLocaleDateString();
+                    html += `
+                        <tr>
+                            <td>${result.name}</td>
+                            <td>${result.score} / ${result.totalQuestions}</td>
+                            <td>${date}</td>
+                            <td>
+                                ${currentUser.role === 'admin' ? `<button class="btn btn-danger btn-sm" onclick="deleteResult('${club}', ${resultsByClub[club].indexOf(result)})">Eliminar</button>` : ''}
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                                </tbody>
+                            </table>
+                            <button class="btn btn-danger mt-3" onclick="deleteClubResults('${club}')">Eliminar todos los resultados de ${club}</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += '</div>';
+
+            quizContainer.style.display = 'none';
+            resultContainer.style.display = 'none';
+            registrationForm.style.display = 'none';
+            document.querySelector('.progress').style.display = 'none';
+            
+            const resultsDiv = document.createElement('div');
+            resultsDiv.id = 'allResults';
+            resultsDiv.innerHTML = html;
+            document.querySelector('.quiz-container').appendChild(resultsDiv);
+        }
+
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const results = JSON.parse(localStorage.getItem('quizResults') || '[]');
+            
+            // Configuración inicial del documento
+            doc.setFont('helvetica');
+            doc.setFontSize(16);
+            doc.text('Resultados de Exámenes por Club', 14, 20);
+            
+            // Agrupar resultados por club
+            const resultsByClub = {};
+            results.forEach(result => {
+                if (!resultsByClub[result.club]) {
+                    resultsByClub[result.club] = [];
+                }
+                resultsByClub[result.club].push(result);
+            });
+            
+            let yPos = 30;
+            
+            // Iterar sobre cada club
+            for (const club in resultsByClub) {
+                if (yPos > 250) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                
+                doc.setFontSize(14);
+                doc.text(`Club: ${club}`, 14, yPos);
+                yPos += 10;
+                
+                const tableData = resultsByClub[club].map(result => [
+                    result.name,
+                    Math.round((result.score / result.totalQuestions) * 100) + '%',
+                    new Date(result.date).toLocaleDateString()
+                ]);
+                
+                doc.autoTable({
+                    head: [['Nombre', 'Puntuación', 'Fecha']],
+                    body: tableData,
+                    startY: yPos,
+                    margin: { left: 14 },
+                    theme: 'grid',
+                    headStyles: { fillColor: [100, 100, 100] },
+                    styles: { fontSize: 10 }
+                });
+                
+                yPos = doc.lastAutoTable.finalY + 20;
+            }
+            
+            // Guardar el PDF
+            doc.save('resultados_examenes.pdf');
+        }
+
+        function printResults() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

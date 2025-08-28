@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventos Locales - Aventureros</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        :root {
+            --aventureros-color: #4169E1;
+        }
+        .btn-primary {
+            background-color: var(--aventureros-color);
+            border-color: var(--aventureros-color);
+        }
+        .btn-primary:hover {
+            background-color: #3457b2;
+            border-color: #3457b2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <a href="secret_aventureros.html" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Volver al Menú
+            </a>
+            <h2>Gestión de Eventos Locales - Aventureros</h2>
+        </div>
+
+        <!-- Formulario de Evento -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Registrar Nuevo Evento</h5>
+                <form id="eventoForm">
+                    <div class="mb-3">
+                        <label for="titulo" class="form-label">Título</label>
+                        <input type="text" class="form-control" id="titulo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fecha" class="form-label">Fecha</label>
+                        <input type="date" class="form-control" id="fecha" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="descripcion" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="estado" class="form-label">Estado</label>
+                        <select class="form-control" id="estado" required>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="En Progreso">En Progreso</option>
+                            <option value="Completado">Completado</option>
+                            <option value="Cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Crear Evento</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tabla de Eventos -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Eventos Registrados</h5>
+                <button class="btn btn-primary mb-3" onclick="exportarPDF()">Exportar a PDF</button>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Fecha</th>
+                                <th>Descripción</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="eventosTabla"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edición -->
+    <div class="modal fade" id="editarModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Evento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editarForm">
+                        <input type="hidden" id="editId">
+                        <div class="mb-3">
+                            <label for="editTitulo" class="form-label">Título</label>
+                            <input type="text" class="form-control" id="editTitulo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editFecha" class="form-label">Fecha</label>
+                            <input type="date" class="form-control" id="editFecha" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editDescripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="editDescripcion" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editEstado" class="form-label">Estado</label>
+                            <select class="form-control" id="editEstado" required>
+                                <option value="Pendiente">Pendiente</option>
+                                <option value="En Progreso">En Progreso</option>
+                                <option value="Completado">Completado</option>
+                                <option value="Cancelado">Cancelado</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Gestión de eventos
+        let eventos = JSON.parse(localStorage.getItem('eventos_locales_aventureros')) || [];
+        const eventoForm = document.getElementById('eventoForm');
+        const eventosTabla = document.getElementById('eventosTabla');
+        const editarModal = new bootstrap.Modal(document.getElementById('editarModal'));
+
+        // Función para guardar eventos
+        eventoForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const evento = {
+                id: Date.now(),
+                titulo: document.getElementById('titulo').value,
+                fecha: document.getElementById('fecha').value,
+                descripcion: document.getElementById('descripcion').value,
+                estado: document.getElementById('estado').value
+            };
+            eventos.push(evento);
+            localStorage.setItem('eventos_locales_aventureros', JSON.stringify(eventos));
+            actualizarTabla();
+            eventoForm.reset();
+        });
+
+        // Función para actualizar la tabla
+        function actualizarTabla() {
+            eventosTabla.innerHTML = '';
+            eventos.forEach(evento => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${evento.titulo}</td>
+                    <td>${evento.fecha}</td>
+                    <td>${evento.descripcion}</td>
+                    <td>${evento.estado}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="editarEvento(${evento.id})">Editar</button>
+                        <button class="btn btn-sm btn-danger" onclick="eliminarEvento(${evento.id})">Eliminar</button>
+                    </td>
+                `;
+                eventosTabla.appendChild(row);
+            });
+        }
+
+        // Función para editar evento
+        function editarEvento(id) {
+            const evento = eventos.find(e => e.id === id);
+            document.getElementById('editId').value = evento.id;
+            document.getElementById('editTitulo').value = evento.titulo;
+            document.getElementById('editFecha').value = evento.fecha;
+            document.getElementById('editDescripcion').value = evento.descripcion;
+            document.getElementById('editEstado').value = evento.estado;
+            editarModal.show();
+        }
+
+        // Función para eliminar evento
+        function eliminarEvento(id) {
+            if (confirm('¿Está seguro de que desea eliminar este evento?')) {
+                eventos = eventos.filter(e => e.id !== id);
+                localStorage.setItem('eventos_locales_aventureros', JSON.stringify(eventos));
+                actualizarTabla();
+            }
+        }
+
+        // Manejar el formulario de edición
+        document.getElementById('editarForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = parseInt(document.getElementById('editId').value);
+            const index = eventos.findIndex(e => e.id === id);
+            eventos[index] = {
+                id: id,
+                titulo: document.getElementById('editTitulo').value,
+                fecha: document.getElementById('editFecha').value,
+                descripcion: document.getElementById('editDescripcion').value,
+                estado: document.getElementById('editEstado').value
+            };
+            localStorage.setItem('eventos_locales_aventureros', JSON.stringify(eventos));
+            actualizarTabla();
+            editarModal.hide();
+        });
+
+        // Función para exportar a PDF
+        function exportarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Configurar el título
+            doc.setFontSize(16);
+            doc.text('Eventos Locales - Aventureros', 14, 20);
+
+            // Preparar los datos para la tabla
+            const headers = [['Título', 'Fecha', 'Descripción', 'Estado']];
+            const data = eventos.map(evento => [
+                evento.titulo,
+                evento.fecha,
+                evento.descripcion,
+                evento.estado
+            ]);
+
+            // Generar la tabla
+            doc.autoTable({
+                startY: 30,
+                head: headers,
+                body: data,
+                theme: 'grid',
+                styles: { fontSize: 8 },
+                columnStyles: {
+                    0: { cellWidth: 40 },
+                    1: { cellWidth: 30 },
+                    2: { cellWidth: 80 },
+                    3: { cellWidth: 30 }
+                }
+            });
+
+            // Guardar el PDF
+            doc.save('eventos_locales_aventureros.pdf');
+        }
+
+        // Cargar eventos al iniciar
+        actualizarTabla();
+    </script>
+</body>
+</html>

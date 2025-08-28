@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Conquistadores - Sistema de Control</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="../js/auth.js"></script>
+    <style>
+        :root {
+            --abejitas-color: #FFD700;
+            --rayitos-color: #FF6B6B;
+            --constructores-color: #4CAF50;
+            --manos-color: #2196F3;
+        }
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--abejitas-color), var(--rayitos-color), var(--constructores-color), var(--manos-color));
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .main-content {
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border-top: 5px solid transparent;
+        }
+        .card:nth-child(1) { border-color: var(--abejitas-color); }
+        .card:nth-child(2) { border-color: var(--rayitos-color); }
+        .card:nth-child(3) { border-color: var(--constructores-color); }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        .welcome-section {
+            text-align: center;
+            color: white;
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="../img/aventureros.png" alt="Logo Aventureros" height="40" style="margin-right: 10px;">
+                Panel de Conquistadores
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-danger" href="#" onclick="logout()" style="font-weight: bold;"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="userInfo"></a>
+                    </li>
+                    <li class="nav-item admin-only" style="display: none;">
+                        <a class="nav-link" href="../admin.html">Volver al Panel Admin</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container main-content">
+        <div class="welcome-section">
+            <h1>Bienvenido al Panel de Conquistadores</h1>
+            <p>Sistema de Control y Gestión</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Director Conquistadores</h5>
+                        <p class="card-text">Acceso a funciones administrativas y de gestión del club.</p>
+                        <a href="director_conquist.html" class="btn" style="background-color: var(--abejitas-color); border: none; color: #000;">Acceder Director</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Secretario Conquistadores</h5>
+                        <p class="card-text">Gestión de registros y documentación del club.</p>
+                        <a href="secret_conquist.html" class="btn" style="background-color: var(--rayitos-color); border: none; color: #000;">Acceder Secretario</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Eventos Zonales</h5>
+                        <p class="card-text"> Aqui estaran registradas todas las actividades Zonales importantes.</p>
+                        <a href="../Zona/eventos_zonales.html" class="btn" style="background-color: var(--constructores-color); border: none; color: #fff;">Acceder Eventos</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

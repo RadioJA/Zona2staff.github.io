@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Financiero - Club de Conquistadores</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        .btn-export {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-export:hover {
+            background-color: #218838;
+            color: white;
+        }
+        .balance-card {
+            transition: transform 0.2s;
+        }
+        .balance-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">Club de Conquistadores</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../Conquistadores/secret_conquist.html">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="registros_avent.html">Registros</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">Control Financiero</h1>
+
+        <!-- Tarjetas de Balance -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card balance-card bg-success text-white">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Ingresos Totales</h5>
+                        <h3 id="total-ingresos">$0.00</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card balance-card bg-danger text-white">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Gastos Totales</h5>
+                        <h3 id="total-gastos">$0.00</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card balance-card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Balance Actual</h5>
+                        <h3 id="balance-actual">$0.00</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de Registro -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Registrar Transacción</h5>
+                <form id="transactionForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="fecha" class="form-label">Fecha</label>
+                            <input type="date" class="form-control" id="fecha" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="tipo" class="form-label">Tipo de Transacción</label>
+                            <select class="form-select" id="tipo" required>
+                                <option value="ingreso">Ingreso</option>
+                                <option value="gasto">Gasto</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="descripcion" class="form-label">Descripción</label>
+                            <input type="text" class="form-control" id="descripcion" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="monto" class="form-label">Monto</label>
+                            <input type="number" class="form-control" id="monto" step="0.01" min="0" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Registrar</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Gráfico de Balance -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Balance Mensual</h5>
+                <canvas id="balanceChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Tabla de Transacciones -->
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title">Historial de Transacciones</h5>
+                    <button class="btn btn-export" onclick="exportToPDF()">
+                        <i class="fas fa-file-pdf me-2"></i>Exportar a PDF
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover" id="transactionsTable">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Descripción</th>
+                                <th>Tipo</th>
+                                <th>Monto</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script>
+        // Almacenamiento de transacciones
+        let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+
+        // Función para actualizar los totales
+        function updateTotals() {
+            const totals = transactions.reduce((acc, trans) => {
+                if (trans.tipo === 'ingreso') {
+                    acc.ingresos += parseFloat(trans.monto);
+                } else {
+                    acc.gastos += parseFloat(trans.monto);
+                }
+                return acc;
+            }, { ingresos: 0, gastos: 0 });
+
+            document.getElementById('total-ingresos').textContent = `$${totals.ingresos.toFixed(2)}`;
+            document.getElementById('total-gastos').textContent = `$${totals.gastos.toFixed(2)}`;
+            document.getElementById('balance-actual').textContent = `$${(totals.ingresos - totals.gastos).toFixed(2)}`;
+
+            updateChart();
+        }
+
+        // Función para actualizar la tabla
+        function updateTable() {
+            const tbody = document.getElementById('transactionsBody');
+            tbody.innerHTML = '';
+
+            transactions.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)).forEach((trans, index) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${trans.fecha}</td>
+                    <td>${trans.descripcion}</td>
+                    <td><span class="badge ${trans.tipo === 'ingreso' ? 'bg-success' : 'bg-danger'}">${trans.tipo}</span></td>
+                    <td>$${parseFloat(trans.monto).toFixed(2)}</td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" onclick="deleteTransaction(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+            });
+        }
+
+        // Función para actualizar el gráfico
+        function updateChart() {
+            const ctx = document.getElementById('balanceChart').getContext('2d');
+            const monthlyData = {};
+
+            transactions.forEach(trans => {
+                const month = trans.fecha.substring(0, 7);
+                if (!monthlyData[month]) {
+                    monthlyData[month] = { ingresos: 0, gastos: 0 };
+                }
+                if (trans.tipo === 'ingreso') {
+                    monthlyData[month].ingresos += parseFloat(trans.monto);
+                } else {
+                    monthlyData[month].gastos += parseFloat(trans.monto);
+                }
+            });
+
+            const months = Object.keys(monthlyData).sort();
+            const ingresos = months.map(m => monthlyData[m].ingresos);
+            const gastos = months.map(m => monthlyData[m].gastos);
+
+            if (window.myChart) {
+                window.myChart.destroy();
+            }
+
+            window.myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [
+                        {
+                            label: 'Ingresos',
+                            data: ingresos,
+                            borderColor: '#28a745',
+                            fill: false
+                        },
+                        {
+                            label: 'Gastos',
+                            data: gastos,
+                            borderColor: '#dc3545',
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Función para eliminar una transacción
+        function deleteTransaction(index) {
+            if (confirm('¿Está seguro de que desea eliminar esta transacción?')) {
+                transactions.splice(index, 1);
+                localStorage.setItem('transactions', JSON.stringify(transactions));
+                updateTable();
+                updateTotals();
+            }
+        }
+
+        // Función para exportar a PDF
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.text('Reporte Financiero - Club de Aventureros', 20, 20);
+            doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 20, 30);
+            
+            let y = 50;
+            transactions.forEach((trans, index) => {
+                if (y > 250) {
+                    doc.addPage();
+                    y = 20;
+                }
+                doc.text(`${trans.fecha} - ${trans.descripcion} - ${trans.tipo} - $${trans.monto}`, 20, y);
+                y += 10;
+            });
+            
+            doc.save('reporte-financiero.pdf');
+        }
+
+        // Event Listeners
+        document.getElementById('transactionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const transaction = {
+                fecha: document.getElementById('fecha').value,
+                tipo: document.getElementById('tipo').value,
+                descripcion: document.getElementById('descripcion').value,
+                monto: document.getElementById('monto').value
+            };
+
+            transactions.push(transaction);
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+            
+            this.reset();
+            updateTable();
+            updateTotals();
+        });
+
+        // Inicialización
+        updateTable();
+        updateTotals();
+    </script>
+</body>
+</html>

@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Directiva - Zona 2</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        .header {
+            background-color: #dc3545;
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        .btn-action {
+            margin: 0 5px;
+        }
+        .category-header {
+            padding: 12px;
+            margin-top: 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .club-row {
+            transition: background-color 0.2s ease;
+        }
+        .club-row:hover {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="index_staff.html" class="btn btn-light">
+                    <i class="fas fa-arrow-left me-2"></i>Volver al Menú
+                </a>
+                <h1 class="text-center flex-grow-1">Registro de Directiva - Zona 2</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mb-5">
+        <!-- Formulario de Registro -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title mb-4">Nuevo Registro</h3>
+                        <form id="registroForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="nombreClub" class="form-label">Nombre del Club</label>
+                                    <select class="form-select" id="nombreClub" required>
+                                        <option value="">Seleccione un club</option>
+                                        <option value="PEQUEÑOS HÉROES DE LA FÉ">PEQUEÑOS HÉROES DE LA FÉ</option>
+                                        <option value="GEUEL Aventurero">GEUEL Aventurero</option>
+                                        <option value="PEQUEÑOS PIONEROS">PEQUEÑOS PIONEROS</option>
+                                        <option value="GUARDIANES DE LA FÉ">GUARDIANES DE LA FÉ</option>
+                                        <option value="ENMANUEL">ENMANUEL</option>
+                                        <option value="HORMIGUITA LABORIOSAS">HORMIGUITA LABORIOSAS</option>
+                                        <option value="LUZ DE SILOE">LUZ DE SILOE</option>
+                                        <option value="SOLDADITOS DEL REY">SOLDADITOS DEL REY</option>
+                                        <option value="SOLDADITOS DE JESUS">SOLDADITOS DE JESUS</option>
+                                        <option value="SOLDADITOS DE LA FÉ">SOLDADITOS DE LA FÉ</option>
+                                        <option value="ESTRELLITAS DE JESÚS">ESTRELLITAS DE JESÚS</option>
+                                        <option value="OBEJITAS DE JESUS">OBEJITAS DE JESUS</option>
+                                        <option value="ARJE SION">ARJE SION</option>
+                                        <option value="ELYON">ELYON</option>
+                                        <option value="CONQUI-POWER">CONQUI-POWER</option>
+                                        <option value="ESTRELLA DE ORIÓN">ESTRELLA DE ORIÓN</option>
+                                        <option value="MARANATHA">MARANATHA</option>
+                                        <option value="ANGELES DE HIERRO">ANGELES DE HIERRO</option>
+                                        <option value="QUERUBINES">QUERUBINES</option>
+                                        <option value="PIONEROS DEL NORTE">PIONEROS DEL NORTE</option>
+                                        <option value="GEUEL Conquistadores">GEUEL Conquistadores</option>
+                                        <option value="HÉROES DE LA FE">HÉROES DE LA FE</option>
+                                        <option value="CALEB">CALEB</option>
+                                        <option value="LEONES DE JUDA">LEONES DE JUDA</option>
+                                        <option value="SEAR JASUB">SEAR JASUB</option>
+                                        <option value="LA TRIBU DEL NORTE">LA TRIBU DEL NORTE</option>
+                                        <option value="EXCÉLSIOR">EXCÉLSIOR</option>
+                                        <option value="LEGENDARY">LEGENDARY</option>
+                                        <option value="SIRIUS">SIRIUS</option>
+                                        <option value="UZIEL">UZIEL</option>
+                                        <option value="BETELGEUSE">BETELGEUSE</option>
+                                        <option value="PIONEROS">PIONEROS</option>
+                                        <option value="ALPHA CENTAURI">ALPHA CENTAURI</option>
+                                        <option value="GEUEL EGM">GEUEL EGM</option>
+                                        <option value="DINAMUS">DINAMUS</option>
+                                        <option value="ÁNGELES DE ORIÓN">ÁNGELES DE ORIÓN</option>
+                                        <option value="Directiva de Zona">Directiva de Zona</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="categoria" class="form-label">Categoría</label>
+                                    <select class="form-select" id="categoria" required>
+                                        <option value="">Seleccione una categoría</option>
+                                        <option value="Escuela de Guías">Escuela de Guías</option>
+                                        <option value="Conquistadores">Conquistadores</option>
+                                        <option value="Aventureros">Aventureros</option>
+                                        <option value="Staff">Staff</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="cargo" class="form-label">Cargo</label>
+                                    <select class="form-select" id="cargo" required>
+                                        <option value="">Seleccione un cargo</option>
+                                        <option value="Anciano Asignado">Anciano Asignado</option>
+                                        <option value="Capellán">Capellán</option>
+                                        <option value="Consejera General">Consejera General</option>
+                                        <option value="Consejero General">Consejero General</option>
+                                        <option value="Coordinador">Coordinador</option>
+                                        <option value="Coordinador Distrital">Coordinador Distrital</option>
+                                        <option value="Director">Director</option>
+                                        <option value="DUCM">DUCM</option>
+                                        <option value="Enc. de Educación">Enc. de Educación</option>
+                                        <option value="Enc. de Especialidades">Enc. de Especialidades</option>
+                                        <option value="Enc. de Evaluación Aventureros">Enc. de Evaluación Aventureros</option>
+                                        <option value="Enc. de Evaluación Conqui-Guía">Enc. de Evaluación Conqui-Guía</option>
+                                        <option value="Enc. del DUMC">Enc. del DUMC</option>
+                                        <option value="Especialista de Aventureros">Especialista de Aventureros</option>
+                                        <option value="Especialista de Conquistadores">Especialista de Conquistadores</option>
+                                        <option value="Especialista de Guías">Especialista de Guías</option>
+                                        <option value="Instructor de Clase">Instructor de Clase</option>
+                                        <option value="Instructor de Marcha">Instructor de Marcha</option>
+                                        <option value="Multimedia">Multimedia</option>
+                                        <option value="Secretaría">Secretaría</option>
+                                        <option value="Secretario-Tesorero">Secretario-Tesorero</option>
+                                        <option value="Sub-director">Sub-director</option>
+                                        <option value="Sub-directora">Sub-directora</option>
+                                        <option value="Tesorera">Tesorera</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="responsable" class="form-label">Responsable</label>
+                                    <input type="text" class="form-control" id="responsable" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="telefono" class="form-label">Teléfono</label>
+                                    <input type="tel" class="form-control" id="telefono" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="iglesia" class="form-label">Iglesia</label>
+                                    <select class="form-select" id="iglesia" required>
+                                        <option value="">Seleccione una iglesia</option>
+                                        <option value="Sión">Sión</option>
+                                <option value="Adonai">Adonai</option>
+                                <option value="Ebenezer">Ebenezer</option>
+                                <option value="Cordero de Dios">Cordero de Dios</option>
+                                <option value="Maranatha, Gurabo">Maranatha, Gurabo</option>
+                                <option value="Gurabo">Gurabo</option>
+                                <option value="Fuente de Vida">Fuente de Vida</option>
+                                <option value="Fuente de Salvación">Fuente de Salvación</option>
+                                <option value="Central Jábaba">Central Jábaba</option>
+                                <option value="Rosa de Sarón">Rosa de Sarón</option>
+                                <option value="La Fé">La Fé</option>
+                                <option value="Reconciliación">Reconciliación</option>
+                                <option value="Rayo de Luz">Rayo de Luz</option>
+                                <option value="Central Moca">Central Moca</option>
+                                <option value="Villa Trina">Villa Trina</option>
+                                <option value="San Victor">San Victor</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="distrito" class="form-label">Distrito</label>
+                                    <select class="form-select" id="distrito" required>
+                                        <option value="">Seleccione un distrito</option>
+                                        <option value="Sion">Sion</option>
+                                        <option value="Nuevo Amanecer">Nuevo Amanecer</option>
+                                        <option value="Tamporil">Tamporil</option>
+                                        <option value="Moca 2">Moca 2</option>
+                                        <option value="Moca">Moca</option>
+                                        <option value="Jábaba">Jábaba</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Guardar Registro</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-8">
+                <button class="btn btn-success" onclick="exportarPDF()">
+                    <i class="fas fa-file-pdf"></i> Exportar a PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabla de Registros -->
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Club</th>
+                                <th>Categoría</th>
+                                <th>Cargo</th>
+                                <th>Responsable</th>
+                                <th>Teléfono</th>
+                                <th>Iglesia</th>
+                                <th>Distrito</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="registrosTabla"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edición -->
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Registro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm">
+                        <input type="hidden" id="editId">
+                        <div class="mb-3">
+                            <label for="editNombreClub" class="form-label">Nombre del Club</label>
+                            <select class="form-select" id="editNombreClub" required>
+                                <option value="PEQUEÑOS HÉROES DE LA FÉ">PEQUEÑOS HÉROES DE LA FÉ</option>
+                                <option value="GEUEL Aventurero">GEUEL Aventurero</option>
+                                <option value="PEQUEÑOS PIONEROS">PEQUEÑOS PIONEROS</option>
+                                <option value="GUARDIANES DE LA FÉ">GUARDIANES DE LA FÉ</option>
+                                <option value="ENMANUEL">ENMANUEL</option>
+                                <option value="HORMIGUITA LABORIOSAS">HORMIGUITA LABORIOSAS</option>
+                                <option value="LUZ DE SILOE">LUZ DE SILOE</option>
+                                <option value="SOLDADITOS DEL REY">SOLDADITOS DEL REY</option>
+                                <option value="SOLDADITOS DE JESUS">SOLDADITOS DE JESUS</option>
+                                <option value="SOLDADITOS DE LA FÉ">SOLDADITOS DE LA FÉ</option>
+                                <option value="ESTRELLITAS DE JESÚS">ESTRELLITAS DE JESÚS</option>
+                                <option value="OBEJITAS DE JESUS">OBEJITAS DE JESUS</option>
+                                <option value="ARJE SION">ARJE SION</option>
+                                <option value="ELYON">ELYON</option>
+                                <option value="CONQUI-POWER">CONQUI-POWER</option>
+                                <option value="ESTRELLA DE ORIÓN">ESTRELLA DE ORIÓN</option>
+                                <option value="MARANATHA">MARANATHA</option>
+                                <option value="ANGELES DE HIERRO">ANGELES DE HIERRO</option>
+                                <option value="QUERUBINES">QUERUBINES</option>
+                                <option value="PIONEROS DEL NORTE">PIONEROS DEL NORTE</option>
+                                <option value="GEUEL Conquistadores">GEUEL Conquistadores</option>
+                                <option value="HÉROES DE LA FE">HÉROES DE LA FE</option>
+                                <option value="CALEB">CALEB</option>
+                                <option value="LEONES DE JUDA">LEONES DE JUDA</option>
+                                <option value="SEAR JASUB">SEAR JASUB</option>
+                                <option value="LA TRIBU DEL NORTE">LA TRIBU DEL NORTE</option>
+                                <option value="EXCÉLSIOR">EXCÉLSIOR</option>
+                                <option value="LEGENDARY">LEGENDARY</option>
+                                <option value="SIRIUS">SIRIUS</option>
+                                <option value="UZIEL">UZIEL</option>
+                                <option value="BETELGEUSE">BETELGEUSE</option>
+                                <option value="PIONEROS">PIONEROS</option>
+                                <option value="ALPHA CENTAURI">ALPHA CENTAURI</option>
+                                <option value="GEUEL EGM">GEUEL EGM</option>
+                                <option value="DINAMUS">DINAMUS</option>
+                                <option value="ÁNGELES DE ORIÓN">ÁNGELES DE ORIÓN</option>
+                                <option value="Staff Z2">Staff Z2</option>
+
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editCategoria" class="form-label">Categoría</label>
+                            <select class="form-select" id="editCategoria" required>
+                                <option value="">Seleccione una categoría</option>
+                                <option value="Escuela de Guías">Escuela de Guías</option>
+                                <option value="Conquistadores">Conquistadores</option>
+                                <option value="Aventureros">Aventureros</option>
+                                <option value="Staff">Staff</option>
+
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editCargo" class="form-label">Cargo</label>
+                            <select class="form-select" id="editCargo" required>
+                                <option value="">Seleccione un cargo</option>
+                                <option value="Anciano Asignado">Anciano Asignado</option>
+                                <option value="Capellán">Capellán</option>
+                                <option value="Consejera General">Consejera General</option>
+                                <option value="Consejero General">Consejero General</option>
+                                <option value="Coordinador">Coordinador</option>
+                                <option value="Coordinador Distrital">Coordinador Distrital</option>
+                                <option value="Director">Director</option>
+                                <option value="DUCM">DUCM</option>
+                                <option value="Enc. de Educación">Enc. de Educación</option>
+                                <option value="Enc. de Especialidades">Enc. de Especialidades</option>
+                                <option value="Enc. de Evaluación Aventureros">Enc. de Evaluación Aventureros</option>
+                                <option value="Enc. de Evaluación Conqui-Guía">Enc. de Evaluación Conqui-Guía</option>
+                                <option value="Enc. del DUMC">Enc. del DUMC</option>
+                                <option value="Especialista de Aventureros">Especialista de Aventureros</option>
+                                <option value="Especialista de Conquistadores">Especialista de Conquistadores</option>
+                                <option value="Especialista de Guías">Especialista de Guías</option>
+                                <option value="Instructor de Clase">Instructor de Clase</option>
+                                <option value="Instructor de Marcha">Instructor de Marcha</option>
+                                <option value="Multimedia">Multimedia</option>
+                                <option value="Secretaría">Secretaría</option>
+                                <option value="Secretario-Tesorero">Secretario-Tesorero</option>
+                                <option value="Sub-director">Sub-director</option>
+                                <option value="Sub-directora">Sub-directora</option>
+                                <option value="Tesorera">Tesorera</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editResponsable" class="form-label">Responsable</label>
+                            <input type="text" class="form-control" id="editResponsable" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editTelefono" class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" id="editTelefono" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editIglesia" class="form-label">Iglesia</label>
+                            <select class="form-select" id="editIglesia" required>
+                                <option value="">Seleccione una iglesia</option>
+                                <option value="Sión">Sión</option>
+                                <option value="Adonai">Adonai</option>
+                                <option value="Ebenezer">Ebenezer</option>
+                                <option value="Cordero de Dios">Cordero de Dios</option>
+                                <option value="Maranatha, Gurabo">Maranatha, Gurabo</option>
+                                <option value="Gurabo">Gurabo</option>
+                                <option value="Fuente de Vida">Fuente de Vida</option>
+                                <option value="Fuente de Salvación">Fuente de Salvación</option>
+                                <option value="Central Jábaba">Central Jábaba</option>
+                                <option value="Rosa de Sarón">Rosa de Sarón</option>
+                                <option value="La Fé">La Fé</option>
+                                <option value="Reconciliación">Reconciliación</option>
+                                <option value="Rayo de Luz">Rayo de Luz</option>
+                                <option value="Central Moca">Central Moca</option>
+                                <option value="Villa Trina">Villa Trina</option>
+                                <option value="San Victor">San Victor</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editDistrito" class="form-label">Distrito</label>
+                            <select class="form-select" id="editDistrito" required>
+                                <option value="">Seleccione un distrito</option>
+                                <option value="Sion">Sion</option>
+                                <option value="Nuevo Amanecer">Nuevo Amanecer</option>
+                                <option value="Tamporil">Tamporil</option>
+                                <option value="Moca 2">Moca 2</option>
+                                <option value="Moca">Moca</option>
+                                <option value="Jábaba">Jábaba</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+            let registros = JSON.parse(localStorage.getItem('registrosDirectiva')) || [];
+        
+            // Función para validar formato de teléfono
+            function validarTelefono(telefono) {
+                const numeroLimpio = telefono.replace(/\D/g, '');
+                if (numeroLimpio.length !== 10) {
+                    throw new Error('El número debe tener 10 dígitos');
+                }
+                const codigoArea = numeroLimpio.slice(0, 3);
+                const codigosValidos = ['809', '829', '849'];
+                if (!codigosValidos.includes(codigoArea)) {
+                    throw new Error('El código de área debe ser 809, 829 o 849');
+                }
+                return true;
+            }
+
+            // Función para formatear teléfono
+            function formatearTelefono(telefono) {
+                try {
+                    const numeroLimpio = telefono.replace(/\D/g, '');
+                    validarTelefono(numeroLimpio);
+                    return `(${numeroLimpio.slice(0,3)}) ${numeroLimpio.slice(3,6)}-${numeroLimpio.slice(6)}`;
+                } catch (error) {
+                    throw error;
+                }
+            }
+
+            // Función para mostrar mensajes de error
+            function mostrarError(mensaje, elemento) {
+                alert(mensaje);
+                if (elemento) {
+                    elemento.focus();
+                    elemento.classList.add('is-invalid');
+                }
+            }
+
+            // Función para limpiar errores
+            function limpiarError(elemento) {
+                elemento.classList.remove('is-invalid');
+            }
+
+            // Función para validar formulario
+            function validarFormulario(form) {
+                const campos = ['nombreClub', 'categoria', 'cargo', 'responsable', 'telefono', 'iglesia', 'distrito'];
+                let esValido = true;
+
+                campos.forEach(campo => {
+                    const elemento = form.querySelector(`#${campo}`);
+                    if (!elemento.value.trim()) {
+                        mostrarError(`Por favor, complete el campo ${campo.replace(/([A-Z])/g, ' $1').toLowerCase()}`, elemento);
+                        esValido = false;
+                    } else {
+                        limpiarError(elemento);
+                    }
+                });
+
+                return esValido;
+            }
+
+            // Evento de envío del formulario principal
+            document.getElementById('registroForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (!validarFormulario(this)) return;
+                
+                const telefonoInput = document.getElementById('telefono');
+                
+                try {
+                    validarTelefono(telefonoInput.value);
+                    limpiarError(telefonoInput);
+
+                    const nuevoRegistro = {
+                        id: Date.now().toString(),
+                        nombreClub: document.getElementById('nombreClub').value,
+                        categoria: document.getElementById('categoria').value,
+                        cargo: document.getElementById('cargo').value,
+                        responsable: document.getElementById('responsable').value,
+                        telefono: formatearTelefono(telefonoInput.value),
+                        iglesia: document.getElementById('iglesia').value,
+                        distrito: document.getElementById('distrito').value
+                    };
+
+                    registros.push(nuevoRegistro);
+                    localStorage.setItem('registrosDirectiva', JSON.stringify(registros));
+                    this.reset();
+                    actualizarTabla();
+                    
+                    // Mostrar mensaje de éxito con estilo
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-success alert-dismissible fade show';
+                    alertDiv.innerHTML = `
+                        <strong>¡Éxito!</strong> Registro guardado correctamente.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+                    this.insertAdjacentElement('beforebegin', alertDiv);
+                    
+                    // Remover la alerta después de 3 segundos
+                    setTimeout(() => alertDiv.remove(), 3000);
+                } catch (error) {
+                    mostrarError(error.message, telefonoInput);
+                }
+            });
+        
+            // Función para actualizar la tabla
+            function actualizarTabla() {
+                try {
+                    const tabla = document.getElementById('registrosTabla');
+                    tabla.innerHTML = '';
+        
+                    // Agrupar registros por categoría y club
+                    const categorias = {};
+                    registros.forEach(registro => {
+                        if (!categorias[registro.categoria]) {
+                            categorias[registro.categoria] = {};
+                        }
+                        if (!categorias[registro.categoria][registro.nombreClub]) {
+                            categorias[registro.categoria][registro.nombreClub] = [];
+                        }
+                        categorias[registro.categoria][registro.nombreClub].push(registro);
+                    });
+        
+                    // Mostrar registros organizados
+                    Object.entries(categorias).forEach(([categoria, clubes]) => {
+                        // Encabezado de categoría
+                        tabla.innerHTML += `
+                            <tr class="category-header bg-light">
+                                <td colspan="8"><strong>${categoria}</strong></td>
+                            </tr>
+                        `;
+        
+                        // Registros por club
+                        Object.entries(clubes).forEach(([nombreClub, registrosClub]) => {
+                            registrosClub.forEach(registro => {
+                                tabla.innerHTML += `
+                                    <tr class="club-row">
+                                        <td>${registro.nombreClub}</td>
+                                        <td>${registro.categoria}</td>
+                                        <td>${registro.cargo}</td>
+                                        <td>${registro.responsable}</td>
+                                        <td>${registro.telefono}</td>
+                                        <td>${registro.iglesia}</td>
+                                        <td>${registro.distrito}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary btn-action" onclick="editarRegistro('${registro.id}')" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-danger btn-action" onclick="eliminarRegistro('${registro.id}')" title="Eliminar">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `;
+                            });
+                        });
+                    });
+                } catch (error) {
+                    console.error('Error al actualizar la tabla:', error);
+                    alert('Hubo un error al actualizar la tabla. Por favor, recargue la página.');
+                }
+            }
+        
+            // Función para editar registro
+            function editarRegistro(id) {
+                try {
+                    const registro = registros.find(r => r.id === id);
+                    if (registro) {
+                        document.getElementById('editId').value = registro.id;
+                        document.getElementById('editNombreClub').value = registro.nombreClub;
+                        document.getElementById('editCategoria').value = registro.categoria;
+                        document.getElementById('editCargo').value = registro.cargo;
+                        document.getElementById('editResponsable').value = registro.responsable;
+                        document.getElementById('editTelefono').value = registro.telefono.replace(/[()\s-]/g, '');
+                        document.getElementById('editIglesia').value = registro.iglesia;
+                        document.getElementById('editDistrito').value = registro.distrito;
+                        new bootstrap.Modal(document.getElementById('editModal')).show();
+                    } else {
+                        alert('No se encontró el registro para editar.');
+                    }
+                } catch (error) {
+                    console.error('Error al cargar el registro para editar:', error);
+                    alert('Hubo un error al cargar el registro para editar.');
+                }
+            }
+        
+            // Evento de envío del formulario de edición
+            document.getElementById('editForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const telefonoInput = document.getElementById('editTelefono');
+                
+                if (!validarTelefono(telefonoInput.value)) {
+                    alert('Por favor, ingrese un número de teléfono válido (10 dígitos)');
+                    telefonoInput.focus();
+                    return;
+                }
+        
+                try {
+                    const id = document.getElementById('editId').value;
+                    const index = registros.findIndex(r => r.id === id);
+                    if (index !== -1) {
+                        registros[index] = {
+                            id: id,
+                            nombreClub: document.getElementById('editNombreClub').value,
+                            categoria: document.getElementById('editCategoria').value,
+                            cargo: document.getElementById('editCargo').value,
+                            responsable: document.getElementById('editResponsable').value,
+                            telefono: formatearTelefono(telefonoInput.value),
+                            iglesia: document.getElementById('editIglesia').value,
+                            distrito: document.getElementById('editDistrito').value
+                        };
+                        localStorage.setItem('registrosDirectiva', JSON.stringify(registros));
+                        actualizarTabla();
+                        bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+                        alert('Registro actualizado exitosamente');
+                    }
+                } catch (error) {
+                    console.error('Error al actualizar el registro:', error);
+                    alert('Hubo un error al actualizar el registro. Por favor, intente nuevamente.');
+                }
+            });
+        
+            // Función para eliminar registro
+            function eliminarRegistro(id) {
+                try {
+                    if (confirm('¿Está seguro de eliminar este registro?')) {
+                        registros = registros.filter(r => r.id !== id);
+                        localStorage.setItem('registrosDirectiva', JSON.stringify(registros));
+                        actualizarTabla();
+                        alert('Registro eliminado exitosamente');
+                    }
+                } catch (error) {
+                    console.error('Error al eliminar el registro:', error);
+                    alert('Hubo un error al eliminar el registro. Por favor, intente nuevamente.');
+                }
+            }
+        
+            // Función para exportar a PDF
+            function exportarPDF() {
+                try {
+                    if (!window.jspdf || registros.length === 0) {
+                        alert('No hay registros para exportar o la biblioteca jsPDF no está cargada correctamente.');
+                        return;
+                    }
+
+                    window.jsPDF = window.jspdf.jsPDF;
+                    const doc = new jsPDF();
+                    
+                    // Configuración de estilos y colores
+                    const styles = {
+                        header: { fontSize: 20, fontStyle: 'bold' },
+                        subheader: { fontSize: 16, fontStyle: 'bold' },
+                        clubHeader: { fontSize: 14, fontStyle: 'bold' },
+                        normal: { fontSize: 11 },
+                        small: { fontSize: 9 }
+                    };
+                    const colors = {
+                        primary: [44, 62, 80],
+                        secondary: [52, 152, 219],
+                        accent: [231, 76, 60],
+                        aventureros: [46, 204, 113],
+                        conquistadores: [155, 89, 182],
+                        guias: [230, 126, 34]
+                    };
+                    
+                    // Encabezado del documento
+                    doc.setFillColor(...colors.primary);
+                    doc.rect(0, 0, doc.internal.pageSize.getWidth(), 40, 'F');
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(styles.header.fontSize);
+                    doc.text('REGISTRO DE DIRECTIVA - ZONA 2', doc.internal.pageSize.getWidth() / 2, 25, { align: 'center' });
+                    
+                    // Información de generación
+                    doc.setTextColor(0, 0, 0);
+                    doc.setFontSize(styles.small.fontSize);
+                    const fechaGeneracion = new Date().toLocaleDateString('es-ES', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    doc.text('Fecha de generación: ' + fechaGeneracion, 14, 45);
+                    
+                    // Resumen estadístico
+                    let startY = 60;
+                    doc.setFillColor(...colors.secondary);
+                    doc.rect(10, startY - 5, doc.internal.pageSize.getWidth() - 20, 10, 'F');
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFontSize(styles.subheader.fontSize);
+                    doc.text('RESUMEN ESTADÍSTICO', doc.internal.pageSize.getWidth() / 2, startY, { align: 'center' });
+                    startY += 15;
+
+                    const categorias = ['Escuela de Guías', 'Conquistadores', 'Aventureros', 'Staff'];
+                    const registrosPorCategoria = {};
+                    const clubesPorCategoria = {};
+                    let totalRegistros = 0;
+                    let totalClubes = 0;
+
+                    // Calcular estadísticas
+                    categorias.forEach(categoria => {
+                        registrosPorCategoria[categoria] = registros.filter(r => r.categoria === categoria);
+                        clubesPorCategoria[categoria] = new Set(registrosPorCategoria[categoria].map(r => r.nombreClub)).size;
+                        totalRegistros += registrosPorCategoria[categoria].length;
+                        totalClubes += clubesPorCategoria[categoria];
+                    });
+
+                    // Mostrar estadísticas generales
+                    doc.setTextColor(0, 0, 0);
+                    doc.setFontSize(styles.normal.fontSize);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(`Total de Directivos: ${totalRegistros}`, 20, startY);
+                    doc.text(`Total de Clubes: ${totalClubes}`, 120, startY);
+                    startY += 10;
+
+                    // Mostrar estadísticas por categoría
+                    doc.setFont('helvetica', 'normal');
+                    categorias.forEach((categoria, index) => {
+                        const colorKey = categoria.toLowerCase().includes('aventureros') ? 'aventureros' :
+                                        categoria.toLowerCase().includes('conquistadores') ? 'conquistadores' :
+                                        categoria.toLowerCase().includes('staff') ? 'primary' : 'guias';
+                        doc.setFillColor(...colors[colorKey]);
+                        doc.rect(15, startY - 4, doc.internal.pageSize.getWidth() - 30, 7, 'F');
+                        doc.setTextColor(255, 255, 255);
+                        doc.text(categoria, 20, startY);
+                        doc.text(`${registrosPorCategoria[categoria].length} directivos`, 120, startY);
+                        doc.text(`${clubesPorCategoria[categoria]} clubes`, 170, startY);
+                        startY += 10;
+                    });
+                    startY += 10;
+
+                    // Contenido principal por categoría
+                    categorias.forEach(categoria => {
+                        const registrosCategoria = registrosPorCategoria[categoria];
+                        if (registrosCategoria.length > 0) {
+                            // Nueva página para cada categoría
+                            doc.addPage();
+                            startY = 20;
+
+                            // Encabezado de categoría
+                            const colorKey = categoria.toLowerCase().includes('aventureros') ? 'aventureros' :
+                                            categoria.toLowerCase().includes('conquistadores') ? 'conquistadores' :
+                                            categoria.toLowerCase().includes('staff') ? 'primary' : 'guias';
+                            doc.setFillColor(...colors[colorKey]);
+                            doc.rect(0, 0, doc.internal.pageSize.getWidth(), 30, 'F');
+                            doc.setTextColor(255, 255, 255);
+                            doc.setFontSize(styles.subheader.fontSize);
+                            doc.text(categoria.toUpperCase(), doc.internal.pageSize.getWidth() / 2, 20, { align: 'center' });
+                            startY = 40;
+
+                            // Agrupar por club
+                            const clubes = {};
+                            registrosCategoria.forEach(registro => {
+                                if (!clubes[registro.nombreClub]) {
+                                    clubes[registro.nombreClub] = [];
+                                }
+                                clubes[registro.nombreClub].push(registro);
+                            });
+
+                            // Mostrar registros por club
+                            Object.entries(clubes).forEach(([nombreClub, registrosClub], index) => {
+                                if (startY > doc.internal.pageSize.getHeight() - 40) {
+                                    doc.addPage();
+                                    startY = 20;
+                                }
+
+                                // Encabezado del club
+                                doc.setFillColor(240, 240, 240);
+                                doc.rect(10, startY - 5, doc.internal.pageSize.getWidth() - 20, 10, 'F');
+                                doc.setTextColor(0, 0, 0);
+                                doc.setFontSize(styles.clubHeader.fontSize);
+                                doc.setFont('helvetica', 'bold');
+                                doc.text(`${index + 1}. ${nombreClub}`, 15, startY);
+                                startY += 15;
+
+                                // Encabezados de la tabla
+                                const headers = ['Cargo', 'Responsable', 'Teléfono', 'Iglesia', 'Distrito'];
+                                const colWidths = [40, 45, 30, 40, 35];
+                                let currentX = 15;
+
+                                doc.setFillColor(...colors.secondary);
+                                doc.rect(10, startY - 5, doc.internal.pageSize.getWidth() - 20, 8, 'F');
+                                doc.setTextColor(255, 255, 255);
+                                doc.setFontSize(styles.normal.fontSize);
+                                doc.setFont('helvetica', 'bold');
+
+                                headers.forEach((header, i) => {
+                                    doc.text(header, currentX, startY);
+                                    currentX += colWidths[i];
+                                });
+                                startY += 10;
+
+                                // Contenido de la tabla
+                                doc.setTextColor(0, 0, 0);
+                                doc.setFont('helvetica', 'normal');
+                                registrosClub.forEach(registro => {
+                                    if (startY > doc.internal.pageSize.getHeight() - 20) {
+                                        doc.addPage();
+                                        startY = 20;
+                                    }
+
+                                    currentX = 15;
+                                    doc.text(registro.cargo, currentX, startY);
+                                    currentX += colWidths[0];
+                                    doc.text(registro.responsable, currentX, startY);
+                                    currentX += colWidths[1];
+                                    doc.text(registro.telefono, currentX, startY);
+                                    currentX += colWidths[2];
+                                    doc.text(registro.iglesia, currentX, startY);
+                                    currentX += colWidths[3];
+                                    doc.text(registro.distrito, currentX, startY);
+
+                                    startY += 8;
+                                });
+                                startY += 10;
+                            });
+                        }
+                    });
+
+                    doc.save('Directiva_Zona2.pdf');
+                    alert('PDF generado exitosamente');
+                } catch (error) {
+                    console.error('Error al generar el PDF:', error);
+                    alert('Hubo un error al generar el PDF. Por favor, intente nuevamente.');
+                }
+            }
+        
+            // Cargar registros al iniciar
+            window.addEventListener('load', actualizarTabla);
+        </script>
+    </script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historia Denominacional</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --accent-color: #1e293b;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --hover-color: #4f46e5;
+        }
+
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1519677584237-752f8853252e?auto=format&fit=crop&q=80') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            color: white;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #6e8efb, #a777e3) !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 0.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: white !important;
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-link {
+            color: white;
+            transition: all 0.2s ease;
+            padding: 0.5rem 1rem;
+            margin: 0 0.2rem;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .nav-link i {
+            font-size: 1rem;
+        }
+        .nav-link:hover {
+            color: var(--hover-color);
+            background: rgba(99, 102, 241, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .content-section {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            margin-top: 2rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .content-section:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .content-section h2 {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            letter-spacing: -0.025em;
+        }
+
+        .content-section p {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.75;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">Historia Denominacional</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="amigo.html"><i class="fas fa-user-friends"></i> Amigo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="Companeño.html"><i class="fas fa-users"></i> Compañero</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="Explorador.html"><i class="fas fa-compass"></i> Explorador</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="Orientador.html"><i class="fas fa-map-marked-alt"></i> Orientador</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="Viajero.html"fas fa-route"></i> Viajero</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="Guia.html"><i class="fas fa-star"></i> Guías</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

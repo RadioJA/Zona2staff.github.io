@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel del Staff - Zona 2</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="../js/auth.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #f8f9fa;
+            --coordinador-color: #e74c3c;
+            --secretaria-color: #3498db;
+            --tesoreria-color: #2ecc71;
+            --aventureros-color: #f1c40f;
+            --conquistadores-color: #9b59b6;
+            --guias-color: #1abc9c;
+            --eval-aventureros-color: #d35400;
+            --eval-conquiguias-color: #16a085;
+        }
+
+        body {
+            background-color: var(--secondary-color);
+        }
+
+        .navbar {
+            background-color: var(--primary-color);
+        }
+
+        .navbar-brand, .nav-link {
+            color: white !important;
+        }
+
+        .welcome-section {
+            text-align: center;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card {
+            transition: transform 0.3s;
+            margin-bottom: 1.5rem;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            color: white;
+            border-radius: 25px;
+            padding: 8px 20px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="#">Panel del Staff - Zona 2</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index_Login.html">Cerrar Sesión</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="welcome-section mb-5">
+            <h1>Bienvenido al Panel del Staff</h1>
+            <p class="lead">Selecciona tu área de trabajo</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-user-tie feature-icon" style="color: var(--coordinador-color)"></i>
+                        <h5 class="card-title">Coordinador</h5>
+                        <p class="card-text">Gestión y supervisión general de la zona.</p>
+                        <a href="#" class="btn w-100" style="background-color: var(--coordinador-color)">Acceder</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-file-alt feature-icon" style="color: var(--secretaria-color)"></i>
+                        <h5 class="card-title">Secretaría</h5>
+                        <p class="card-text">Administración de documentos y registros.</p>
+                        <a href="../Staff/panel_secretaria.html" class="btn w-100" style="background-color: var(--secretaria-color)">Acceder</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-coins feature-icon" style="color: var(--tesoreria-color)"></i>
+                        <h5 class="card-title">Tesorería</h5>
+                        <p class="card-text">Control de finanzas y presupuestos.</p>
+                        <a href="tesorero.html" class="btn w-100" style="background-color: var(--tesoreria-color)">Acceder</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-star feature-icon" style="color: var(--aventureros-color)"></i>
+                        <h5 class="card-title">Especialista de Aventureros</h5>
+                        <p class="card-text">Coordinación y apoyo al club de Aventureros.</p>
+                        <a href="#" class="btn w-100" style="background-color: var(--aventureros-color)">Acceder</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-compass feature-icon" style="color: var(--conquistadores-color)"></i>
+                        <h5 class="card-title">Especialista de Conquistadores</h5>
+                        <p class="card-text">Coordinación y apoyo al club de Conquistadores.</p>
+                        <a href="#" class="btn w-100" style="background-color: var(--conquistadores-color)">Acceder</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-map feature-icon" style="color: var(--guias-color)"></i>
+                        <h5 class="card-title">Especialista de Guías</h5>
+                        <p class="card-text">Coordinación y apoyo al club de Guías.</p>
+                        <a href="#" class="btn w-100" style="background-color: var(--guias-color)">Acceder</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-clipboard-check feature-icon" style="color: var(--eval-aventureros-color)"></i>
+                        <h5 class="card-title">Especialista de Evaluación Aventureros</h5>
+                        <p class="card-text">Evaluación y seguimiento del programa de Aventureros.</p>
+                        <a href="#" class="btn w-100" style="background-color: var(--eval-aventureros-color)">Acceder</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-tasks feature-icon" style="color: var(--eval-conquiguias-color)"></i>
+                        <h5 class="card-title">Especialista de Evaluación Conqui-Guías</h5>
+                        <p class="card-text">Evaluación y seguimiento de Conquistadores y Guías.</p>
+                        <a href="#" class="btn w-100" style="background-color: var(--eval-conquiguias-color)">Acceder</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

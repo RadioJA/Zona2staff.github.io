@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventos Zonales</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #007bff;
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <a href="../admin.html" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Volver al Menú
+            </a>
+            <h2>Registro de Eventos Zonales</h2>
+        </div>
+
+        <!-- Formulario de Registro -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form id="registroForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="titulo" class="form-label">Título del Evento</label>
+                            <input type="text" class="form-control" id="titulo" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="fecha" class="form-label">Fecha</label>
+                            <input type="date" class="form-control" id="fecha" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="descripcion" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="estado" class="form-label">Estado</label>
+                        <select class="form-control" id="estado" required>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="En Progreso">En Progreso</option>
+                            <option value="Completado">Completado</option>
+                            <option value="Cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Registrar Evento</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tabla de Eventos -->
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title">Lista de Eventos</h3>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Fecha</th>
+                                <th>Descripción</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="eventosTabla"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edición -->
+    <div class="modal fade" id="editarModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Evento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editarForm">
+                        <input type="hidden" id="editId">
+                        <div class="mb-3">
+                            <label for="editTitulo" class="form-label">Título del Evento</label>
+                            <input type="text" class="form-control" id="editTitulo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editFecha" class="form-label">Fecha</label>
+                            <input type="date" class="form-control" id="editFecha" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editDescripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="editDescripcion" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editEstado" class="form-label">Estado</label>
+                            <select class="form-control" id="editEstado" required>
+                                <option value="Pendiente">Pendiente</option>
+                                <option value="En Progreso">En Progreso</option>
+                                <option value="Completado">Completado</option>
+                                <option value="Cancelado">Cancelado</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Verificar autenticación y rol
+        const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+        if (!currentUser) {
+            window.location.href = '../Login/index.html';
+        }
+
+        // Variables globales
+        let eventos = JSON.parse(localStorage.getItem('eventos_zonales')) || [];
+        const editarModal = new bootstrap.Modal(document.getElementById('editarModal'));
+        const isAdmin = currentUser && currentUser.role === 'admin';
+
+        // Función para actualizar la tabla
+        function actualizarTabla() {
+            const tbody = document.getElementById('eventosTabla');
+            tbody.innerHTML = '';
+            eventos.forEach(evento => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${evento.titulo}</td>
+                    <td>${evento.fecha}</td>
+                    <td>${evento.descripcion}</td>
+                    <td>${evento.estado}</td>
+                    <td>
+                        ${isAdmin ? `
+                            <button class="btn btn-sm btn-warning" onclick="editarEvento(${evento.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="eliminarEvento(${evento.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        ` : ''}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Manejar el formulario de registro
+        document.getElementById('registroForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const evento = {
+                id: Date.now(),
+                titulo: document.getElementById('titulo').value,
+                fecha: document.getElementById('fecha').value,
+                descripcion: document.getElementById('descripcion').value,
+                estado: document.getElementById('estado').value
+            };
+            eventos.push(evento);
+            localStorage.setItem('eventos_zonales', JSON.stringify(eventos));
+            this.reset();
+            actualizarTabla();
+        });
+
+        // Función para editar evento
+        function editarEvento(id) {
+            if (!isAdmin) return;
+            const evento = eventos.find(e => e.id === id);
+            document.getElementById('editId').value = evento.id;
+            document.getElementById('editTitulo').value = evento.titulo;
+            document.getElementById('editFecha').value = evento.fecha;
+            document.getElementById('editDescripcion').value = evento.descripcion;
+            document.getElementById('editEstado').value = evento.estado;
+            editarModal.show();
+        }
+
+        // Manejar el formulario de edición
+        document.getElementById('editarForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (!isAdmin) return;
+            const id = parseInt(document.getElementById('editId').value);
+            const index = eventos.findIndex(e => e.id === id);
+            eventos[index] = {
+                id: id,
+                titulo: document.getElementById('editTitulo').value,
+                fecha: document.getElementById('editFecha').value,
+                descripcion: document.getElementById('editDescripcion').value,
+                estado: document.getElementById('editEstado').value
+            };
+            localStorage.setItem('eventos_zonales', JSON.stringify(eventos));
+            actualizarTabla();
+            editarModal.hide();
+        });
+
+        // Función para eliminar evento
+        function eliminarEvento(id) {
+            if (!isAdmin) return;
+            if (confirm('¿Está seguro de que desea eliminar este evento?')) {
+                eventos = eventos.filter(e => e.id !== id);
+                localStorage.setItem('eventos_zonales', JSON.stringify(eventos));
+                actualizarTabla();
+            }
+        }
+
+        // Inicializar la tabla
+        actualizarTabla();
+
+        // Ocultar botones de registro si no es admin
+        if (!isAdmin) {
+            document.getElementById('registroForm').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

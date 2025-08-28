@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen de Historia Denominacional de Orientador/title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1519677584237-752f8853252e?auto=format&fit=crop&q=80') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+        }
+        .quiz-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .question-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .option-btn {
+            width: 100%;
+            text-align: left;
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            background-color: white;
+            transition: all 0.3s;
+        }
+        .option-btn:hover {
+            background-color: #e9ecef;
+        }
+        .option-btn.correct {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .option-btn.incorrect {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .result-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .progress {
+            height: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container quiz-container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <a href="indexHD.html" class="btn btn-outline-primary"><i class="fas fa-arrow-left"></i> Volver al Menú</a>
+            <h1 class="text-center mb-0">Examen de Historia Denominacional de Orientador</h1>
+            <button id="showResultsBtn" class="btn btn-info" onclick="showAllResults()" style="display: none;">Ver Resultados</button>
+        </div>
+
+        <div id="registrationForm" class="card p-4 mb-4">
+            <h3 class="mb-3">Registro de Estudiante</h3>
+            <div class="mb-3">
+                <label for="studentName" class="form-label">Nombre Completo</label>
+                <input type="text" class="form-control" id="studentName" required>
+            </div>
+            <div class="mb-3">
+                <label for="clubName" class="form-label">Club</label>
+                <input type="text" class="form-control" id="clubName" required>
+            </div>
+            <button class="btn btn-primary" onclick="startQuiz()">Comenzar Examen</button>
+        </div>
+        <div class="progress">
+            <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <div id="quiz"></div>
+        <div class="result-container" style="display: none;">
+            <h2>Resultados del Examen</h2>
+            <p>Puntuación: <span id="score">0</span> de 100</p>
+            <button class="btn btn-primary" onclick="restartQuiz()">Intentar de nuevo</button>
+            <button class="btn btn-secondary" onclick="reviewAnswers()">Revisar respuestas</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script>
+        const questions = [
+            {
+                question: "¿Quién fue el primer misionero adventista 'no oficial'?",
+                options: ["J. N. Andrews", "Michael Czechowski", "James Erzberger", "Elena White"],
+                correct: 1
+            },
+            {
+                question: "¿Dónde organizó Michael Czechowski un pequeño grupo de observadores del sábado?",
+                options: ["Francia", "Suiza", "Italia", "Inglaterra"],
+                correct: 1
+            },
+            {
+                question: "¿En qué año la Asociación General envió a J. N. Andrews a Suiza?",
+                options: ["1850", "1865", "1874", "1883"],
+                correct: 2
+            },
+            {
+                question: "¿Qué revista comenzó a publicar Andrews en francés en 1876?",
+                options: ["Signs of the Times", "Review and Herald", "Ramara", "IADPA"],
+                correct: 0
+            },
+            {
+                question: "¿Quién fue enviado desde Estados Unidos para ayudar a establecer la obra en Francia e Italia?",
+                options: ["Gerhardt Perk", "Daniel Bourdeau", "John Tay", "John Matterson"],
+                correct: 1
+            },
+            {
+                question: "¿Dónde se estableció la planta impresora y oficinas adventistas en Europa?",
+                options: ["Londres", "París", "Basilea", "Roma"],
+                correct: 2
+            },
+            {
+                question: "¿Qué tragedia sufrió J. N. Andrews en Estados Unidos antes de regresar a Suiza?",
+                options: ["La muerte de su hijo", "La pérdida de su esposa", "La muerte de su hija", "Un accidente de barco"],
+                correct: 2
+            },
+            {
+                question: "¿A qué continente viajó Elena White en 1885 para ayudar con la obra adventista?",
+                options: ["África", "Asia", "Europa", "Oceanía"],
+                correct: 2
+            },
+            {
+                question: "¿Cuál fue el primer misionero adventista enviado a Inglaterra?",
+                options: ["William Ings", "J. N. Loughborough", "Gerhardt Perk", "James Fulton"],
+                correct: 0
+            },
+            {
+                question: "¿Qué misioneros adventistas sufrieron prisión en Rusia?",
+                options: ["Baharian y Corliss", "Conradi y Perk", "Robinson y Boyd", "Czechowski y Erzberger"],
+                correct: 1
+            },
+            {
+                question: "¿Qué país visitó John Corliss en 1884 por consejo de Elena White?",
+                options: ["Sudáfrica", "Australia", "Brasil", "Canadá"],
+                correct: 1
+            },
+            {
+                question: "¿En qué ciudad se estableció la primera iglesia adventista en Australia?",
+                options: ["Sydney", "Brisbane", "Melbourne", "Perth"],
+                correct: 2
+            },
+            {
+                question: "¿Cómo llamaron la casa de Elena White en Australia?",
+                options: ["Ramara", "Sunnyside", "Avondale", "Basilea"],
+                correct: 1
+            },
+            {
+                question: "¿En qué año se organizó la División Interamericana?",
+                options: ["1900", "1922", "1945", "1960"],
+                correct: 1
+            },
+            {
+                question: "¿En qué país se ubicó inicialmente la sede de la División Interamericana?",
+                options: ["México", "Panamá", "Cuba", "Estados Unidos"],
+                correct: 3
+            },
+            {
+                question: "¿A qué país se trasladó la sede de la División Interamericana después de Pearl Harbor?",
+                options: ["Costa Rica", "México", "Cuba", "Venezuela"],
+                correct: 2
+            },
+            {
+                question: "¿Quién fue sanado milagrosamente en África, lo que llevó a su conversión al adventismo?",
+                options: ["J. N. Loughborough", "Peter Wessels", "Daniel Bourdeau", "James Fulton"],
+                correct: 1
+            },
+            {
+                question: "¿Qué país fue el primero en recibir una estación misionera adventista entre los no cristianos?",
+                options: ["India", "Zimbabue", "Egipto", "Nigeria"],
+                correct: 1
+            },
+            {
+                question: "¿Dónde trabajó el misionero Abram La Rué?",
+                options: ["Brasil", "Hong Kong", "Rusia", "España"],
+                correct: 1
+            },
+            {
+                question: "¿Cuál fue la primera isla en el Pacífico Sur donde se estableció la obra adventista?",
+                options: ["Fiyi", "Samoa", "Isla Pitcairn", "Islas Cook"],
+                correct: 2
+            },
+            {
+                question: "¿Cómo se llamó el barco misionero construido con ofrendas de la escuela sabática?",
+                options: ["Ramara", "Pitcairn", "Sunnyside", "Andrews"],
+                correct: 1
+            },
+            {
+                question: "¿Qué misionero adventista estableció una estación en Fiyi en 1896?",
+                options: ["John Tay", "James Fulton", "William Ings", "David Ostland"],
+                correct: 1
+            },
+            {
+                question: "¿Qué país en Oceanía tiene un colegio adventista que lleva el nombre de James Fulton?",
+                options: ["Australia", "Nueva Zelanda", "Fiyi", "Papúa Nueva Guinea"],
+                correct: 2
+            },
+            {
+                question: "¿Dónde estableció el pastor Carr una estación misionera en 1880?",
+                options: ["China", "Papúa Nueva Guinea", "India", "Filipinas"],
+                correct: 1
+            },
+            {
+                question: "¿Quién fue el primer colportor adventista en Australia?",
+                options: ["Stephen Haskell", "William Arnold", "James Erzberger", "Gerhardt Perk"],
+                correct: 1
+            },
+            {
+                question: "¿Qué enfermedad común en Nueva Guinea es tratada en hospitales adventistas?",
+                options: ["Malaria", "Tuberculosis", "Lepra", "Polio"],
+                correct: 2
+            },
+            {
+                question: "¿Qué institución adventista en Estados Unidos se especializa en educación médica?",
+                options: ["Colegio de Avondale", "Universidad Adventista de Colombia", "Loma Linda", "Fulton College"],
+                correct: 2
+            },
+            {
+                question: "¿En qué país está ubicado el Sanatorio Adventista de Skodsburg?",
+                options: ["Alemania", "Suiza", "Dinamarca", "Noruega"],
+                correct: 2
+            },
+            {
+                question: "¿Dónde estuvo ubicado el Colegio de las Antillas antes de convertirse en la Universidad Adventista de las Antillas?",
+                options: ["Cuba", "México", "Puerto Rico", "República Dominicana"],
+                correct: 0
+            },
+            {
+                question: "¿Cómo se llama la agencia de publicaciones adventista en la División Interamericana?",
+                options: ["Review and Herald", "IADPA", "Signs of the Times", "Avondale Press"],
+                correct: 1
+            },
+            {
+                question: "¿Dónde está ubicada la sede de la Asociación General Adventista?",
+                options: ["Nueva York", "Washington, D.C.", "Los Ángeles", "Miami"],
+                correct: 1
+            },
+            {
+                question: "¿Cuántas uniones componían la División Interamericana en 2009?",
+                options: ["10", "12", "15", "20"],
+                correct: 3
+            },
+            {
+                question: "¿En qué país está la Universidad Adventista de Colombia?",
+                options: ["Chile", "Argentina", "Colombia", "Venezuela"],
+                correct: 2
+            },
+            {
+                question: "¿Qué es lo más importante en la iglesia según el documento?",
+                options: ["Los edificios", "Las publicaciones", "Las personas", "Los misioneros"],
+                correct: 2
+            },
+            {
+                question: "¿Cuál es la misión principal de los adventistas según el documento?",
+                options: ["Construir templos", "Convertirse en misioneros en el extranjero", "Llevar el mensaje de Jesús al mundo", "Traducir la Biblia a todos los idiomas"],
+                correct: 2
+            }
+        ]
+        let currentQuestion = 0;
+        let score = 0;
+        let answers = [];
+        let studentData = null;
+        
+        // Ocultar el quiz inicialmente
+        document.getElementById('quiz').style.display = 'none';
+        document.querySelector('.progress').style.display = 'none';
+
+        function startQuiz() {
+            const name = document.getElementById('studentName').value.trim();
+            const club = document.getElementById('clubName').value.trim();
+
+            if (!name || !club) {
+                alert('Por favor, complete todos los campos');
+                return;
+            }
+
+            studentData = { name, club };
+            document.getElementById('registrationForm').style.display = 'none';
+            document.getElementById('quiz').style.display = 'block';
+            document.querySelector('.progress').style.display = 'block';
+            document.getElementById('showResultsBtn').style.display = 'block';
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            const questionData = questions[currentQuestion];
+            const quizContainer = document.getElementById('quiz');
+            const progress = (currentQuestion / questions.length) * 100;
+
+            document.querySelector('.progress-bar').style.width = `${progress}%`;
+            document.querySelector('.progress-bar').setAttribute('aria-valuenow', progress);
+
+            let html = `
+                <div class="question-card">
+                    <h3 class="mb-4">Pregunta ${currentQuestion + 1} de ${questions.length}</h3>
+                    <p class="h5 mb-4">${questionData.question}</p>
+                    <div class="options">
+            `;
+
+            questionData.options.forEach((option, index) => {
+                html += `
+                    <button class="option-btn" onclick="selectAnswer(${index})">
+                        ${option}
+                    </button>
+                `;
+            });
+
+            html += `
+                    </div>
+                </div>
+            `;
+
+            quizContainer.innerHTML = html;
+        }
+
+        function selectAnswer(optionIndex) {
+            const questionData = questions[currentQuestion];
+            const buttons = document.querySelectorAll('.option-btn');
+            
+            buttons.forEach(button => button.disabled = true);
+            
+            if (optionIndex === questionData.correct) {
+                buttons[optionIndex].classList.add('correct');
+                score++;
+            } else {
+                buttons[optionIndex].classList.add('incorrect');
+                buttons[questionData.correct].classList.add('correct');
+            }
+
+            answers.push(optionIndex);
+
+            setTimeout(() => {
+                currentQuestion++;
+                if (currentQuestion < questions.length) {
+                    displayQuestion();
+                } else {
+                    showResults();
+                }
+            }, 1500);
+        }
+
+        function showResults() {
+            const quizContainer = document.getElementById('quiz');
+            const resultContainer = document.querySelector('.result-container');
+            const scoreElement = document.getElementById('score');
+            
+            // Calcular puntuación sobre 100
+            const finalScore = Math.round((score / questions.length) * 100);
+
+            quizContainer.style.display = 'none';
+            resultContainer.style.display = 'block';
+            scoreElement.textContent = finalScore;
+
+            // Guardar resultado en localStorage
+            const result = {
+                ...studentData,
+                score,
+                totalQuestions: questions.length,
+                date: new Date().toISOString(),
+                answers
+            };
+
+            const results = JSON.parse(localStorage.getItem('quizResults') || '[]');
+            results.push(result);
+            localStorage.setItem('quizResults', JSON.stringify(results));
+        }
+
+        function reviewAnswers() {
+            const quizContainer = document.getElementById('quiz');
+            const resultContainer = document.querySelector('.result-container');
+            let html = '';
+
+            questions.forEach((question, index) => {
+                const userAnswer = answers[index];
+                html += `
+                    <div class="question-card">
+                        <h4>Pregunta ${index + 1}</h4>
+                        <p>${question.question}</p>
+                        <p>Tu respuesta: <span class="${userAnswer === question.correct ? 'text-success' : 'text-danger'}">
+                            ${question.options[userAnswer]}
+                        </span></p>
+                        <p>Respuesta correcta: <span class="text-success">
+                            ${question.options[question.correct]}
+                        </span></p>
+                    </div>
+                `;
+            });
+
+            quizContainer.innerHTML = html;
+            quizContainer.style.display = 'block';
+            resultContainer.style.display = 'none';
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            answers = [];
+            studentData = null;
+            const quizContainer = document.getElementById('quiz');
+            const resultContainer = document.querySelector('.result-container');
+            const registrationForm = document.getElementById('registrationForm');
+
+            quizContainer.style.display = 'none';
+            resultContainer.style.display = 'none';
+            registrationForm.style.display = 'block';
+            document.getElementById('studentName').value = '';
+            document.getElementById('clubName').value = '';
+            document.querySelector('.progress').style.display = 'none';
+            document.getElementById('showResultsBtn').style.display = 'none';
+        }
+
+        function deleteResult(club, index) {
+            if (!confirm('¿Está seguro de que desea eliminar este resultado?')) return;
+            
+            let results = JSON.parse(localStorage.getItem('quizResults') || '[]');
+            results = results.filter(result => !(result.club === club && results.indexOf(result) === index));
+            localStorage.setItem('quizResults', JSON.stringify(results));
+            showAllResults();
+        }
+
+        function deleteClubResults(club) {
+            if (!confirm(`¿Está seguro de que desea eliminar todos los resultados del club ${club}?`)) return;
+            
+            let results = JSON.parse(localStorage.getItem('quizResults') || '[]');
+            results = results.filter(result => result.club !== club);
+            localStorage.setItem('quizResults', JSON.stringify(results));
+            showAllResults();
+        }
+
+        function showAllResults() {
+            const results = JSON.parse(localStorage.getItem('quizResults') || '[]');
+            const quizContainer = document.getElementById('quiz');
+            const resultContainer = document.querySelector('.result-container');
+            const registrationForm = document.getElementById('registrationForm');
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+
+            if (!currentUser) {
+                alert('Debe iniciar sesión para ver los resultados');
+                return;
+            }
+
+            // Filtrar resultados según el rol del usuario
+            let filteredResults = currentUser.role === 'admin' ? 
+                results : 
+                results.filter(result => result.name === currentUser.username);
+
+            // Agrupar resultados por club
+            const resultsByClub = {};
+            filteredResults.forEach(result => {
+                if (!resultsByClub[result.club]) {
+                    resultsByClub[result.club] = [];
+                }
+                resultsByClub[result.club].push(result);
+            });
+
+            let html = `
+                <div class="results-list">
+                    <h2 class="mb-4">Resultados por Club</h2>
+                    <button class="btn btn-primary mb-3" onclick="printResults()">Imprimir Resultados</button>
+                    <button class="btn btn-success mb-3 ms-2" onclick="exportToPDF()">Exportar a PDF</button>
+                    <button class="btn btn-secondary mb-3 ms-2" onclick="location.reload()">Volver al Examen</button>
+            `;
+
+            for (const club in resultsByClub) {
+                html += `
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h3 class="mb-0">${club}</h3>
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Puntuación</th>
+                                        <th>Fecha</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                `;
+
+                resultsByClub[club].forEach(result => {
+                    const date = new Date(result.date).toLocaleDateString();
+                    html += `
+                        <tr>
+                            <td>${result.name}</td>
+                            <td>${result.score} / ${result.totalQuestions}</td>
+                            <td>${date}</td>
+                            <td>
+                                ${currentUser.role === 'admin' ? `<button class="btn btn-danger btn-sm" onclick="deleteResult('${club}', ${resultsByClub[club].indexOf(result)})">Eliminar</button>` : ''}
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                                </tbody>
+                            </table>
+                            <button class="btn btn-danger mt-3" onclick="deleteClubResults('${club}')">Eliminar todos los resultados de ${club}</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += '</div>';
+
+            quizContainer.style.display = 'none';
+            resultContainer.style.display = 'none';
+            registrationForm.style.display = 'none';
+            document.querySelector('.progress').style.display = 'none';
+            
+            const resultsDiv = document.createElement('div');
+            resultsDiv.id = 'allResults';
+            resultsDiv.innerHTML = html;
+            document.querySelector('.quiz-container').appendChild(resultsDiv);
+        }
+
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const results = JSON.parse(localStorage.getItem('quizResults') || '[]');
+            
+            // Configuración inicial del documento
+            doc.setFont('helvetica');
+            doc.setFontSize(16);
+            doc.text('Resultados de Exámenes por Club', 14, 20);
+            
+            // Agrupar resultados por club
+            const resultsByClub = {};
+            results.forEach(result => {
+                if (!resultsByClub[result.club]) {
+                    resultsByClub[result.club] = [];
+                }
+                resultsByClub[result.club].push(result);
+            });
+            
+            let yPos = 30;
+            
+            // Iterar sobre cada club
+            for (const club in resultsByClub) {
+                if (yPos > 250) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                
+                doc.setFontSize(14);
+                doc.text(`Club: ${club}`, 14, yPos);
+                yPos += 10;
+                
+                const tableData = resultsByClub[club].map(result => [
+                    result.name,
+                    Math.round((result.score / result.totalQuestions) * 100) + '%',
+                    new Date(result.date).toLocaleDateString()
+                ]);
+                
+                doc.autoTable({
+                    head: [['Nombre', 'Puntuación', 'Fecha']],
+                    body: tableData,
+                    startY: yPos,
+                    margin: { left: 14 },
+                    theme: 'grid',
+                    headStyles: { fillColor: [100, 100, 100] },
+                    styles: { fontSize: 10 }
+                });
+                
+                yPos = doc.lastAutoTable.finalY + 20;
+            }
+            
+            // Guardar el PDF
+            doc.save('resultados_examenes.pdf');
+        }
+
+        function printResults() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Financiero - Tesorería</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.15/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        .balance-card {
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-export {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-export:hover {
+            background-color: #c82333;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Tesorería</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index_staff.html">Inicio</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">Control Financiero de Clubes</h1>
+
+        <!-- Tarjetas de Balance -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card balance-card bg-success text-white">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Ingresos Totales</h5>
+                        <h3 id="total-ingresos">$0.00</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card balance-card bg-danger text-white">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Gastos Totales</h5>
+                        <h3 id="total-gastos">$0.00</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card balance-card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Balance Actual</h5>
+                        <h3 id="balance-actual">$0.00</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de Registro -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Registrar Transacción</h5>
+                <form id="transactionForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="club" class="form-label">Club</label>
+                            <select class="form-select" id="club" required>
+                                <option value="">Seleccione un club</option>
+                                <option value="PEQUEÑOS HÉROES DE LA FÉ">PEQUEÑOS HÉROES DE LA FÉ</option>
+                                <option value="GEUEL">GEUEL</option>
+                                <option value="PEQUEÑOS PIONEROS">PEQUEÑOS PIONEROS</option>
+                                <option value="GUARDIANES DE LA FÉ">GUARDIANES DE LA FÉ</option>
+                                <option value="ENMANUEL">ENMANUEL</option>
+                                <option value="HORMIGUITA LABORIOSAS">HORMIGUITA LABORIOSAS</option>
+                                <option value="LUZ DE SILOE">LUZ DE SILOE</option>
+                                <option value="SOLDADITOS DEL REY">SOLDADITOS DEL REY</option>
+                                <option value="SOLDADITOS DE JESUS">SOLDADITOS DE JESUS</option>
+                                <option value="SOLDADITOS DE LA FÉ">SOLDADITOS DE LA FÉ</option>
+                                <option value="ESTRELLITAS DE JESÚS">ESTRELLITAS DE JESÚS</option>
+                                <option value="OBEJITAS DE JESUS">OBEJITAS DE JESUS</option>
+                                <option value="ARJE SION">ARJE SION</option>
+                                <option value="ELYON">ELYON</option>
+                                <option value="CONQUI-POWER">CONQUI-POWER</option>
+                                <option value="ESTRELLA DE ORIÓN">ESTRELLA DE ORIÓN</option>
+                                <option value="MARANATHA">MARANATHA</option>
+                                <option value="ANGELES DE HIERRO">ANGELES DE HIERRO</option>
+                                <option value="QUERUBINES">QUERUBINES</option>
+                                <option value="PIONEROS DEL NORTE">PIONEROS DEL NORTE</option>
+                                <option value="GEUEL">GEUEL</option>
+                                <option value="HÉROES DE LA FE">HÉROES DE LA FE</option>
+                                <option value="CALEB">CALEB</option>
+                                <option value="LEONES DE JUDA">LEONES DE JUDA</option>
+                                <option value="SEAR JASUB">SEAR JASUB</option>
+                                <option value="LA TRIBU DEL NORTE">LA TRIBU DEL NORTE</option>
+                                <option value="EXCÉLSIOR">EXCÉLSIOR</option>
+                                <option value="LEGENDARY">LEGENDARY</option>
+                                <option value="SIRIUS">SIRIUS</option>
+                                <option value="UZIEL">UZIEL</option>
+                                <option value="BETELGEUSE">BETELGEUSE</option>
+                                <option value="PIONEROS">PIONEROS</option>
+                                <option value="ALPHA CENTAURI">ALPHA CENTAURI</option>
+                                <option value="GEUEL">GEUEL</option>
+                                <option value="DINAMUS">DINAMUS</option>
+                                <option value="ÁNGELES DE ORIÓN">ÁNGELES DE ORIÓN</option>
+
+
+
+
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="mes" class="form-label">Mes</label>
+                            <select class="form-select" id="mes" required>
+                                <option value="">Seleccione un mes</option>
+                                <option value="Enero">Enero</option>
+                                <option value="Febrero">Febrero</option>
+                                <option value="Marzo">Marzo</option>
+                                <option value="Abril">Abril</option>
+                                <option value="Mayo">Mayo</option>
+                                <option value="Junio">Junio</option>
+                                <option value="Julio">Julio</option>
+                                <option value="Agosto">Agosto</option>
+                                <option value="Septiembre">Septiembre</option>
+                                <option value="Octubre">Octubre</option>
+                                <option value="Noviembre">Noviembre</option>
+                                <option value="Diciembre">Diciembre</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="tipo" class="form-label">Tipo de Transacción</label>
+                            <select class="form-select" id="tipo" required>
+                                <option value="ingreso">Ingreso</option>
+                                <option value="gasto">Gasto</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="descripcion" class="form-label">Recibo</label>
+                            <input type="file" class="form-control" id="descripcion" accept="image/*">
+                            <small class="text-muted">Seleccione una imagen del comprobante (opcional, máximo 5MB)</small>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="monto" class="form-label">Monto</label>
+                            <input type="number" class="form-control" id="monto" step="0.01" min="0" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Registrar</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Gráfico de Balance -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Balance Mensual por Club</h5>
+                <canvas id="balanceChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Tabla de Transacciones -->
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title">Historial de Transacciones</h5>
+                    <button class="btn btn-export" onclick="exportToPDF()">
+                        <i class="fas fa-file-pdf me-2"></i>Exportar a PDF
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover" id="transactionsTable">
+                        <thead>
+                            <tr>
+                                <th>Club</th>
+                                <th>Mes</th>
+                                <th>Tipo</th>
+                                <th>Descripción</th>
+                                <th>Monto</th>
+                                <th>Fecha</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let transactions = [];
+        const balanceChart = new Chart(document.getElementById('balanceChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: []
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Cargar datos almacenados
+        function loadStoredData() {
+            const storedData = localStorage.getItem('transactions');
+            if (storedData) {
+                transactions = JSON.parse(storedData);
+                updateUI();
+            }
+        }
+
+        // Actualizar UI
+        function updateUI() {
+            updateBalances();
+            updateTable();
+            updateChart();
+        }
+
+        // Actualizar balances
+        function updateBalances() {
+            let ingresos = 0;
+            let gastos = 0;
+
+            transactions.forEach(t => {
+                if (t.tipo === 'ingreso') {
+                    ingresos += parseFloat(t.monto);
+                } else {
+                    gastos += parseFloat(t.monto);
+                }
+            });
+
+            document.getElementById('total-ingresos').textContent = `$${ingresos.toFixed(2)}`;
+            document.getElementById('total-gastos').textContent = `$${gastos.toFixed(2)}`;
+            document.getElementById('balance-actual').textContent = `$${(ingresos - gastos).toFixed(2)}`;
+        }
+
+        // Actualizar tabla
+        function updateTable() {
+            const tbody = document.getElementById('transactionsBody');
+            tbody.innerHTML = '';
+
+            transactions.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+            transactions.forEach(t => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${t.club}</td>
+                    <td>${t.mes}</td>
+                    <td>${t.tipo.charAt(0).toUpperCase() + t.tipo.slice(1)}</td>
+                    <td><img src="${t.descripcion}" alt="Recibo" style="max-width: 100px; cursor: pointer" onclick="window.open(this.src)"></td>
+                    <td>$${parseFloat(t.monto).toFixed(2)}</td>
+                    <td>${new Date(t.fecha).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="deleteTransaction(${transactions.indexOf(t)})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+            });
+        }
+
+        // Actualizar gráfico
+        function updateChart() {
+            const clubs = [...new Set(transactions.map(t => t.club))];
+            const meses = [...new Set(transactions.map(t => t.mes))];
+
+            const datasets = clubs.map(club => {
+                const data = meses.map(mes => {
+                    const clubTransactions = transactions.filter(t => t.club === club && t.mes === mes);
+                    const balance = clubTransactions.reduce((acc, t) => {
+                        return acc + (t.tipo === 'ingreso' ? parseFloat(t.monto) : -parseFloat(t.monto));
+                    }, 0);
+                    return balance;
+                });
+
+                return {
+                    label: club,
+                    data: data,
+                    backgroundColor: club === 'Aventureros' ? 'rgba(75, 192, 192, 0.2)' : 'rgba(255, 99, 132, 0.2)',
+                    borderColor: club === 'Aventureros' ? 'rgba(75, 192, 192, 1)' : 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                };
+            });
+
+            balanceChart.data.labels = meses;
+            balanceChart.data.datasets = datasets;
+            balanceChart.update();
+        }
+
+        // Manejar envío del formulario
+        document.getElementById('transactionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const fileInput = document.getElementById('descripcion');
+            const file = fileInput.files[0];
+
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('El archivo es demasiado grande. El tamaño máximo es 5MB.');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const transaction = {
+                        club: document.getElementById('club').value,
+                        mes: document.getElementById('mes').value,
+                        tipo: document.getElementById('tipo').value,
+                        descripcion: e.target.result,
+                        monto: document.getElementById('monto').value,
+                        fecha: new Date().toISOString()
+                    };
+
+                    transactions.push(transaction);
+                    localStorage.setItem('transactions', JSON.stringify(transactions));
+                    updateUI();
+                    e.target.form.reset();
+                };
+                reader.readAsDataURL(file);
+            } else {
+                const transaction = {
+                    club: document.getElementById('club').value,
+                    mes: document.getElementById('mes').value,
+                    tipo: document.getElementById('tipo').value,
+                    descripcion: '',
+                    monto: document.getElementById('monto').value,
+                    fecha: new Date().toISOString()
+                };
+
+                transactions.push(transaction);
+                localStorage.setItem('transactions', JSON.stringify(transactions));
+                updateUI();
+                document.getElementById('transactionForm').reset();
+            }
+
+        });
+
+        // Exportar a PDF
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const pageWidth = doc.internal.pageSize.width;
+
+            // Título y fecha
+            doc.setFontSize(18);
+            doc.text('Reporte Financiero', pageWidth/2, 15, { align: 'center' });
+            doc.setFontSize(10);
+            doc.text(`Fecha de generación: ${new Date().toLocaleDateString()}`, pageWidth/2, 22, { align: 'center' });
+
+            // Resumen financiero
+            let ingresos = 0;
+            let gastos = 0;
+            transactions.forEach(t => {
+                if (t.tipo === 'ingreso') {
+                    ingresos += parseFloat(t.monto);
+                } else {
+                    gastos += parseFloat(t.monto);
+                }
+            });
+            const balance = ingresos - gastos;
+
+            doc.setFontSize(12);
+            doc.text('Resumen Financiero:', 14, 30);
+            doc.setFontSize(10);
+            doc.text(`Ingresos Totales: $${ingresos.toFixed(2)}`, 14, 37);
+            doc.text(`Gastos Totales: $${gastos.toFixed(2)}`, 14, 44);
+            doc.text(`Balance General: $${balance.toFixed(2)}`, 14, 51);
+
+            // Tabla de transacciones
+            const tableData = transactions.map(t => [
+                t.club,
+                t.mes,
+                t.tipo.charAt(0).toUpperCase() + t.tipo.slice(1),
+                `$${parseFloat(t.monto).toFixed(2)}`,
+                new Date(t.fecha).toLocaleDateString()
+            ]);
+
+            doc.autoTable({
+                head: [['Club', 'Mes', 'Tipo', 'Monto', 'Fecha']],
+                body: tableData,
+                startY: 60,
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 2
+                },
+                headStyles: {
+                    fillColor: [66, 139, 202],
+                    textColor: 255
+                },
+                alternateRowStyles: {
+                    fillColor: [245, 245, 245]
+                }
+            });
+
+            // Pie de página
+            const pageCount = doc.internal.getNumberOfPages();
+            for(let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.text(`Página ${i} de ${pageCount}`, pageWidth/2, doc.internal.pageSize.height - 10, { align: 'center' });
+            }
+
+            doc.save('reporte-financiero.pdf');
+        }
+
+        // Función para eliminar transacción
+        function deleteTransaction(index) {
+            if (confirm('¿Está seguro de que desea eliminar esta transacción?')) {
+                transactions.splice(index, 1);
+                localStorage.setItem('transactions', JSON.stringify(transactions));
+                updateUI();
+            }
+        }
+
+        // Cargar datos al iniciar
+        loadStoredData();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+<td>${t.descripcion ? `<img src="${t.descripcion}" alt="Recibo" style="max-width: 100px; cursor: pointer" onclick="window.open(this.src)">` : '<i class="fas fa-receipt text-muted"></i>'}</td>

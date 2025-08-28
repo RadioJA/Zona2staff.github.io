@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistencia Aventureros</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .table-container {
+            margin: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .btn-export {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-export:hover {
+            background-color: #218838;
+            color: white;
+        }
+        .attendance-checkbox {
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container-fluid">
+        <div class="row my-4 align-items-center">
+            <div class="col-md-2">
+                <a href="secret_aventureros.html" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Volver al Menú
+                </a>
+            </div>
+            <div class="col-md-6">
+                <h2>Control de Asistencia - Aventureros</h2>
+            </div>
+            <div class="col-md-6 text-end">
+                <button class="btn btn-export" onclick="exportToPDF()">
+                    <i class="fas fa-file-pdf me-2"></i>Exportar a PDF
+                </button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="monthSelect" class="form-label">Mes:</label>
+                    <select class="form-select" id="monthSelect" onchange="loadAttendance()">
+                        <option value="1">Enero</option>
+                        <option value="2">Febrero</option>
+                        <option value="3">Marzo</option>
+                        <option value="4">Abril</option>
+                        <option value="5">Mayo</option>
+                        <option value="6">Junio</option>
+                        <option value="7">Julio</option>
+                        <option value="8">Agosto</option>
+                        <option value="9">Septiembre</option>
+                        <option value="10">Octubre</option>
+                        <option value="11">Noviembre</option>
+                        <option value="12">Diciembre</option>
+                    </select>
+                </div>
+            </div>
+
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Reunión 1</th>
+                        <th>Reunión 2</th>
+                        <th>Reunión 3</th>
+                        <th>Reunión 4</th>
+                        <th>Reunión 5</th>
+                        <th>% Asistencia</th>
+                    </tr>
+                </thead>
+                <tbody id="attendanceTableBody"></tbody>
+            </table>
+
+            <div class="text-end mt-3">
+                <button class="btn btn-primary" onclick="saveAttendance()">
+                    <i class="fas fa-save me-2"></i>Guardar Asistencia
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script>
+        // Cargar los miembros al iniciar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Establecer el mes actual
+            const currentDate = new Date();
+            document.getElementById('monthSelect').value = (currentDate.getMonth() + 1).toString();
+            loadAttendance();
+        });
+
+        function loadAttendance() {
+            const members = JSON.parse(localStorage.getItem('miembros')) || [];
+            const month = document.getElementById('monthSelect').value;
+            const attendanceKey = `asistencia_${month}`;
+            const attendance = JSON.parse(localStorage.getItem(attendanceKey)) || {};
+
+            const tableBody = document.getElementById('attendanceTableBody');
+            tableBody.innerHTML = '';
+
+            members.forEach((member, index) => {
+                const memberAttendance = attendance[member.nombre] || [false, false, false, false, false];
+                const row = document.createElement('tr');
+                
+                // Nombre
+                const nameCell = document.createElement('td');
+                nameCell.textContent = member.nombre;
+                row.appendChild(nameCell);
+
+                // Checkboxes para cada reunión
+                for (let i = 0; i < 5; i++) {
+                    const cell = document.createElement('td');
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.className = 'attendance-checkbox';
+                    checkbox.checked = memberAttendance[i];
+                    checkbox.dataset.member = member.nombre;
+                    checkbox.dataset.meeting = i;
+                    checkbox.onchange = updateAttendancePercentage;
+                    cell.appendChild(checkbox);
+                    row.appendChild(cell);
+                }
+
+                // Porcentaje de asistencia
+                const percentageCell = document.createElement('td');
+                const percentage = calculateAttendancePercentage(memberAttendance);
+                percentageCell.textContent = `${percentage}%`;
+                percentageCell.id = `percentage_${index}`;
+                row.appendChild(percentageCell);
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        function updateAttendancePercentage(event) {
+            const checkbox = event.target;
+            const memberName = checkbox.dataset.member;
+            const row = checkbox.closest('tr');
+            const checkboxes = row.querySelectorAll('.attendance-checkbox');
+            const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const percentage = (checked / 5) * 100;
+            const percentageCell = row.querySelector('td:last-child');
+            percentageCell.textContent = `${percentage}%`;
+        }
+
+        function calculateAttendancePercentage(attendance) {
+            const present = attendance.filter(a => a).length;
+            return ((present / 5) * 100).toFixed(0);
+        }
+
+        function saveAttendance() {
+            const month = document.getElementById('monthSelect').value;
+            const attendance = {};
+
+            document.querySelectorAll('tr').forEach(row => {
+                const checkboxes = row.querySelectorAll('.attendance-checkbox');
+                if (checkboxes.length > 0) {
+                    const memberName = checkboxes[0].dataset.member;
+                    attendance[memberName] = Array.from(checkboxes).map(cb => cb.checked);
+                }
+            });
+
+            localStorage.setItem(`asistencia_${month}`, JSON.stringify(attendance));
+            alert('Asistencia guardada exitosamente');
+        }
+
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            
+            const month = document.getElementById('monthSelect').options[document.getElementById('monthSelect').selectedIndex].text;
+            const currentDate = new Date().toLocaleDateString('es-ES');
+            
+            // Configuración del encabezado
+            doc.setFontSize(18);
+            doc.setTextColor(44, 62, 80);
+            doc.text('Club de Aventureros', doc.internal.pageSize.width/2, 20, { align: 'center' });
+            
+            doc.setFontSize(14);
+            doc.text(`Registro de Asistencia - ${month}`, doc.internal.pageSize.width/2, 30, { align: 'center' });
+            
+            doc.setFontSize(10);
+            doc.text(`Fecha de generación: ${currentDate}`, doc.internal.pageSize.width - 20, 40, { align: 'right' });
+
+            const headers = [['Nombre', 'R1', 'R2', 'R3', 'R4', 'R5', '% Asistencia']];
+            const data = [];
+
+            document.querySelectorAll('#attendanceTableBody tr').forEach(row => {
+                const rowData = [];
+                rowData.push(row.cells[0].textContent); // Nombre
+                
+                // Asistencias
+                for (let i = 1; i <= 5; i++) {
+                    rowData.push(row.cells[i].querySelector('input').checked ? '✓' : '✗');
+                }
+                
+                // Porcentaje
+                rowData.push(row.cells[6].textContent);
+                
+                data.push(rowData);
+            });
+
+            doc.autoTable({
+                head: headers,
+                body: data,
+                startY: 45,
+                theme: 'grid',
+                headStyles: {
+                    fillColor: [44, 62, 80],
+                    textColor: 255,
+                    fontSize: 12,
+                    halign: 'center'
+                },
+                bodyStyles: {
+                    fontSize: 11,
+                    halign: 'center'
+                },
+                columnStyles: {
+                    0: { halign: 'left' }
+                },
+                alternateRowStyles: {
+                    fillColor: [245, 245, 245]
+                },
+                margin: { top: 45 }
+            });
+
+            doc.save(`asistencia_aventureros_${month}.pdf`);
+        }
+    </script>
+</body>
+</html>

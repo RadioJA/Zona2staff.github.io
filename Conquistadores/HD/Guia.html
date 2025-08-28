@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen de Historia Denominacional de Guía</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1519677584237-752f8853252e?auto=format&fit=crop&q=80') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+        }
+        .quiz-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .question-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .option-btn {
+            width: 100%;
+            text-align: left;
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            background-color: white;
+            transition: all 0.3s;
+        }
+        .option-btn:hover {
+            background-color: #e9ecef;
+        }
+        .option-btn.correct {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .option-btn.incorrect {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .result-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .progress {
+            height: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container quiz-container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <a href="indexHD.html" class="btn btn-outline-primary"><i class="fas fa-arrow-left"></i> Volver al Menú</a>
+            <h1 class="text-center mb-0">Examen de Historia Denominacional de Guía</h1>
+            <button id="showResultsBtn" class="btn btn-info" onclick="showAllResults()" style="display: none;">Ver Resultados</button>
+        </div>
+
+        <div id="registrationForm" class="card p-4 mb-4">
+            <h3 class="mb-3">Registro de Estudiante</h3>
+            <div class="mb-3">
+                <label for="studentName" class="form-label">Nombre Completo</label>
+                <input type="text" class="form-control" id="studentName" required>
+            </div>
+            <div class="mb-3">
+                <label for="clubName" class="form-label">Club</label>
+                <input type="text" class="form-control" id="clubName" required>
+            </div>
+            <button class="btn btn-primary" onclick="startQuiz()">Comenzar Examen</button>
+        </div>
+        <div class="progress">
+            <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <div id="quiz"></div>
+        <div class="result-container" style="display: none;">
+            <h2>Resultados del Examen</h2>
+            <p>Puntuación: <span id="score">0</span> de 100</p>
+            <button class="btn btn-primary" onclick="restartQuiz()">Intentar de nuevo</button>
+            <button class="btn btn-secondary" onclick="reviewAnswers()">Revisar respuestas</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script>
+        const questions = [
+            {
+                question: "¿Qué señalaba la profecía de los 2,300 días?",
+                options: ["El nacimiento de Cristo", "El fin del mundo", "La pérdida del privilegio del pueblo judío como escogido de Dios", "La fecha exacta del juicio final"],
+                correct: 2
+            },
+            {
+                question: "¿Quién fue el primer mártir cristiano?",
+                options: ["Pablo", "Pedro", "Esteban", "Juan"],
+                correct: 2
+            },
+            {
+                question: "¿Qué apóstol murió decapitado por Nerón?",
+                options: ["Juan", "Santiago", "Pablo", "Tomás"],
+                correct: 2
+            },
+            {
+                question: "¿Quién fue conocido como el \"lucero de la reforma\"?",
+                options: ["Martín Lutero", "Juan Calvino", "Juan Wiclef", "Juan Hus"],
+                correct: 2
+            },
+            {
+                question: "¿Qué hizo Juan Hus en 1415?",
+                options: ["Fundó la iglesia luterana", "Fue quemado vivo", "Tradujo la Biblia al inglés", "Descubrió América"],
+                correct: 1
+            },
+            {
+                question: "¿Quién fue el campeón de la Reforma en Alemania?",
+                options: ["Martín Lutero", "Juan Wiclef", "Juan Wesley", "Zwinglio"],
+                correct: 0
+            },
+            {
+                question: "¿Cuál fue el error de Guillermo Miller?",
+                options: ["Predicar el sábado", "Decir que Cristo volvería en 1844", "Traducir la Biblia", "Negar la resurrección"],
+                correct: 1
+            },
+            {
+                question: "¿Qué pasó después del \"Gran Chasco\" de 1844?",
+                options: ["El movimiento se disolvió", "Se formó un remanente que estudió más la Biblia", "Todos negaron su fe", "Se fundó la iglesia Católica"],
+                correct: 1
+            },
+            {
+                question: "¿Cuál de los siguientes NO fue un pionero adventista?",
+                options: ["Hiram Edson", "Elena White", "Juan Hus", "Jaime White"],
+                correct: 2
+            },
+            {
+                question: "¿En qué año se aceptó el nombre \"Adventistas del Séptimo Día\"?",
+                options: ["1863", "1844", "1860", "1874"],
+                correct: 2
+            },
+            {
+                question: "¿Quién fue el primer presidente de la Asociación General?",
+                options: ["Jaime White", "John Byington", "Urías Smith", "J.N. Andrews"],
+                correct: 1
+            },
+            {
+                question: "¿Cuántos pastores ordenados había en 1863?",
+                options: ["10", "15", "22", "30"],
+                correct: 2
+            },
+            {
+                question: "¿Quién fue el primer misionero oficial adventista?",
+                options: ["Jaime White", "Urías Smith", "J.N. Andrews", "David Hewitt"],
+                correct: 2
+            },
+            {
+                question: "¿A dónde viajó J.N. Andrews como misionero?",
+                options: ["Cuba", "Haití", "Suiza", "Jamaica"],
+                correct: 2
+            },
+            {
+                question: "¿Quién recibió literatura adventista en Haití y la compartió?",
+                options: ["Charles Moulton", "Henry Williams", "David Hewitt", "John Byington"],
+                correct: 1
+            },
+            {
+                question: "¿Qué tema trataba el primer tratado leído por Williams?",
+                options: ["La segunda venida", "El juicio", "El sábado y el domingo", "El bautismo"],
+                correct: 2
+            },
+            {
+                question: "¿Dónde llegaron D.T. Bourdeau y Loughborough después de cruzar Panamá?",
+                options: ["Jamaica", "Haití", "San Francisco", "Santo Domingo"],
+                correct: 2
+            },
+            {
+                question: "¿En qué año se organizó la División Interamericana?",
+                options: ["1922", "1941", "1920", "1935"],
+                correct: 0
+            },
+            {
+                question: "¿Quién fue el primer presidente de la División Interamericana?",
+                options: ["J.N. Loughborough", "John Byington", "E.E. Andross", "Glenn Calkins"],
+                correct: 2
+            },
+            {
+                question: "¿Dónde se estableció inicialmente la sede de la División Interamericana?",
+                options: ["Miami", "La Habana", "Balboa, Panamá", "San Juan"],
+                correct: 2
+            },
+            {
+                question: "¿En qué año la sede se trasladó a La Habana?",
+                options: ["1922", "1941", "1946", "1977"],
+                correct: 1
+            },
+            {
+                question: "¿A dónde se trasladó la sede en 1946?",
+                options: ["Santo Domingo", "Coral Gables", "Puerto Rico", "Miami, Florida"],
+                correct: 3
+            },
+            {
+                question: "¿Qué ocurrió entre 1977 y 1978 en la División?",
+                options: ["Se cerraron iglesias", "Se bautizaron más de 1,000 personas por semana", "Se unificaron las misiones", "Se cambió el nombre"],
+                correct: 1
+            },
+            {
+                question: "¿Qué unión incluía originalmente a la República Dominicana?",
+                options: ["Unión Caribeña", "Unión Centroamericana", "Unión Antillana", "Unión Hispana"],
+                correct: 2
+            },
+            {
+                question: "¿Cuándo se formó la Unión Dominicana?",
+                options: ["2000", "1990", "1994", "1980"],
+                correct: 2
+            },
+            {
+                question: "¿Quién fue el primer presidente de la Unión Dominicana?",
+                options: ["Filiberto Martínez", "Jaime White", "Arístides González", "Isaías Ferreras"],
+                correct: 2
+            },
+            {
+                question: "¿Qué colportor llegó a República Dominicana en 1907?",
+                options: ["Henry Williams", "Charles Moulton", "H.D. Casebeer", "J.F. Gómez"],
+                correct: 1
+            },
+            {
+                question: "¿Dónde organizó Moulton la primera Escuela Sabática?",
+                options: ["Jábaba", "Cruz Mendoza", "Central Consuelo", "Moca"],
+                correct: 2
+            },
+            {
+                question: "¿Qué hijo de María Williams llegó a ser pastor?",
+                options: ["James", "Luis", "Charles", "Daniel"],
+                correct: 0
+            },
+            {
+                question: "¿En qué año se organizó la primera iglesia en RD?",
+                options: ["1921", "1917", "1908", "1924"],
+                correct: 1
+            },
+            {
+                question: "¿Dónde se construyó el primer templo adventista?",
+                options: ["Central Consuelo", "Jábaba", "Avenida Mella", "Cruz Mendoza"],
+                correct: 2
+            },
+            {
+                question: "¿Cuál fue la segunda iglesia organizada por Moulton?",
+                options: ["Santo Domingo", "Jábaba", "Moca", "Cruz Mendoza"],
+                correct: 3
+            },
+            {
+                question: "¿Quién fue el primer presidente de la Misión Dominicana?",
+                options: ["J.F. Gómez", "Williams Steel", "Meter Nygaard", "Charles Moulton"],
+                correct: 1
+            },
+            {
+                question: "¿En qué año se organizó la Misión Dominicana?",
+                options: ["1921", "1924", "1929", "1963"],
+                correct: 1
+            },
+            {
+                question: "¿Cuántos miembros tenía la Unión Dominicana al formarse en 1994?",
+                options: ["100,000", "322", "87,486", "126,293"],
+                correct: 2
+            },
+            {
+                question: "¿Qué factor impulsó el crecimiento adventista en Sudamérica?",
+                options: ["El trabajo misionero", "La educación", "Las publicaciones", "Todas las anteriores"],
+                correct: 3
+            }
+        ]
+        let currentQuestion = 0;
+        let score = 0;
+        let answers = [];
+        let studentData = null;
+        
+        // Ocultar el quiz inicialmente
+        document.getElementById('quiz').style.display = 'none';
+        document.querySelector('.progress').style.display = 'none';
+
+        function startQuiz() {
+            const name = document.getElementById('studentName').value.trim();
+            const club = document.getElementById('clubName').value.trim();
+
+            if (!name || !club) {
+                alert('Por favor, complete todos los campos');
+                return;
+            }
+
+            studentData = { name, club };
+            document.getElementById('registrationForm').style.display = 'none';
+            document.getElementById('quiz').style.display = 'block';
+            document.querySelector('.progress').style.display = 'block';
+            document.getElementById('showResultsBtn').style.display = 'block';
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            const questionData = questions[currentQuestion];
+            const quizContainer = document.getElementById('quiz');
+            const progress = (currentQuestion / questions.length) * 100;
+
+            document.querySelector('.progress-bar').style.width = `${progress}%`;
+            document.querySelector('.progress-bar').setAttribute('aria-valuenow', progress);
+
+            let html = `
+                <div class="question-card">
+                    <h3 class="mb-4">Pregunta ${currentQuestion + 1} de ${questions.length}</h3>
+                    <p class="h5 mb-4">${questionData.question}</p>
+                    <div class="options">
+            `;
+
+            questionData.options.forEach((option, index) => {
+                html += `
+                    <button class="option-btn" onclick="selectAnswer(${index})">
+                        ${option}
+                    </button>
+                `;
+            });
+
+            html += `
+                    </div>
+                </div>
+            `;
+
+            quizContainer.innerHTML = html;
+        }
+
+        function selectAnswer(optionIndex) {
+            const questionData = questions[currentQuestion];
+            const buttons = document.querySelectorAll('.option-btn');
+            
+            buttons.forEach(button => button.disabled = true);
+            
+            if (optionIndex === questionData.correct) {
+                buttons[optionIndex].classList.add('correct');
+                score++;
+            } else {
+                buttons[optionIndex].classList.add('incorrect');
+                buttons[questionData.correct].classList.add('correct');
+            }
+
+            answers.push(optionIndex);
+
+            setTimeout(() => {
+                currentQuestion++;
+                if (currentQuestion < questions.length) {
+                    displayQuestion();
+                } else {
+                    showResults();
+                }
+            }, 1500);
+        }
+
+        function showResults() {
+            const quizContainer = document.getElementById('quiz');
+            const resultContainer = document.querySelector('.result-container');
+            const scoreElement = document.getElementById('score');
+            
+            // Calcular puntuación sobre 100
+            const finalScore = Math.round((score / questions.length) * 100);
+
+            quizContainer.style.display = 'none';
+            resultContainer.style.display = 'block';
+            scoreElement.textContent = finalScore;
+
+            // Guardar resultado en localStorage
+            const result = {
+                ...studentData,
+                score,
+                totalQuestions: questions.length,
+                date: new Date().toISOString(),
+                answers
+            };
+
+            const results = JSON.parse(localStorage.getItem('quizResults') || '[]');
+            results.push(result);
+            localStorage.setItem('quizResults', JSON.stringify(results));
+        }
+
+        function reviewAnswers() {
+            const quizContainer = document.getElementById('quiz');
+            const resultContainer = document.querySelector('.result-container');
+            let html = '';
+
+            questions.forEach((question, index) => {
+                const userAnswer = answers[index];
+                html += `
+                    <div class="question-card">
+                        <h4>Pregunta ${index + 1}</h4>
+                        <p>${question.question}</p>
+                        <p>Tu respuesta: <span class="${userAnswer === question.correct ? 'text-success' : 'text-danger'}">
+                            ${question.options[userAnswer]}
+                        </span></p>
+                        <p>Respuesta correcta: <span class="text-success">
+                            ${question.options[question.correct]}
+                        </span></p>
+                    </div>
+                `;
+            });
+
+            quizContainer.innerHTML = html;
+            quizContainer.style.display = 'block';
+            resultContainer.style.display = 'none';
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            answers = [];
+            studentData = null;
+            const quizContainer = document.getElementById('quiz');
+            const resultContainer = document.querySelector('.result-container');
+            const registrationForm = document.getElementById('registrationForm');
+
+            quizContainer.style.display = 'none';
+            resultContainer.style.display = 'none';
+            registrationForm.style.display = 'block';
+            document.getElementById('studentName').value = '';
+            document.getElementById('clubName').value = '';
+            document.querySelector('.progress').style.display = 'none';
+            document.getElementById('showResultsBtn').style.display = 'none';
+        }
+
+        function deleteResult(club, index) {
+            if (!confirm('¿Está seguro de que desea eliminar este resultado?')) return;
+            
+            let results = JSON.parse(localStorage.getItem('quizResults') || '[]');
+            results = results.filter(result => !(result.club === club && results.indexOf(result) === index));
+            localStorage.setItem('quizResults', JSON.stringify(results));
+            showAllResults();
+        }
+
+        function deleteClubResults(club) {
+            if (!confirm(`¿Está seguro de que desea eliminar todos los resultados del club ${club}?`)) return;
+            
+            let results = JSON.parse(localStorage.getItem('quizResults') || '[]');
+            results = results.filter(result => result.club !== club);
+            localStorage.setItem('quizResults', JSON.stringify(results));
+            showAllResults();
+        }
+
+        function showAllResults() {
+            const results = JSON.parse(localStorage.getItem('quizResults') || '[]');
+            const quizContainer = document.getElementById('quiz');
+            const resultContainer = document.querySelector('.result-container');
+            const registrationForm = document.getElementById('registrationForm');
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+
+            if (!currentUser) {
+                alert('Debe iniciar sesión para ver los resultados');
+                return;
+            }
+
+            // Filtrar resultados según el rol del usuario
+            let filteredResults = currentUser.role === 'admin' ? 
+                results : 
+                results.filter(result => result.name === currentUser.username);
+
+            // Agrupar resultados por club
+            const resultsByClub = {};
+            filteredResults.forEach(result => {
+                if (!resultsByClub[result.club]) {
+                    resultsByClub[result.club] = [];
+                }
+                resultsByClub[result.club].push(result);
+            });
+
+            let html = `
+                <div class="results-list">
+                    <h2 class="mb-4">Resultados por Club</h2>
+                    <button class="btn btn-primary mb-3" onclick="printResults()">Imprimir Resultados</button>
+                    <button class="btn btn-success mb-3 ms-2" onclick="exportToPDF()">Exportar a PDF</button>
+                    <button class="btn btn-secondary mb-3 ms-2" onclick="location.reload()">Volver al Examen</button>
+            `;
+
+            for (const club in resultsByClub) {
+                html += `
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h3 class="mb-0">${club}</h3>
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Puntuación</th>
+                                        <th>Fecha</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                `;
+
+                resultsByClub[club].forEach(result => {
+                    const date = new Date(result.date).toLocaleDateString();
+                    html += `
+                        <tr>
+                            <td>${result.name}</td>
+                            <td>${result.score} / ${result.totalQuestions}</td>
+                            <td>${date}</td>
+                            <td>
+                                ${currentUser.role === 'admin' ? `<button class="btn btn-danger btn-sm" onclick="deleteResult('${club}', ${resultsByClub[club].indexOf(result)})">Eliminar</button>` : ''}
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                                </tbody>
+                            </table>
+                            <button class="btn btn-danger mt-3" onclick="deleteClubResults('${club}')">Eliminar todos los resultados de ${club}</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += '</div>';
+
+            quizContainer.style.display = 'none';
+            resultContainer.style.display = 'none';
+            registrationForm.style.display = 'none';
+            document.querySelector('.progress').style.display = 'none';
+            
+            const resultsDiv = document.createElement('div');
+            resultsDiv.id = 'allResults';
+            resultsDiv.innerHTML = html;
+            document.querySelector('.quiz-container').appendChild(resultsDiv);
+        }
+
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const results = JSON.parse(localStorage.getItem('quizResults') || '[]');
+            
+            // Configuración inicial del documento
+            doc.setFont('helvetica');
+            doc.setFontSize(16);
+            doc.text('Resultados de Exámenes por Club', 14, 20);
+            
+            // Agrupar resultados por club
+            const resultsByClub = {};
+            results.forEach(result => {
+                if (!resultsByClub[result.club]) {
+                    resultsByClub[result.club] = [];
+                }
+                resultsByClub[result.club].push(result);
+            });
+            
+            let yPos = 30;
+            
+            // Iterar sobre cada club
+            for (const club in resultsByClub) {
+                if (yPos > 250) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                
+                doc.setFontSize(14);
+                doc.text(`Club: ${club}`, 14, yPos);
+                yPos += 10;
+                
+                const tableData = resultsByClub[club].map(result => [
+                    result.name,
+                    Math.round((result.score / result.totalQuestions) * 100) + '%',
+                    new Date(result.date).toLocaleDateString()
+                ]);
+                
+                doc.autoTable({
+                    head: [['Nombre', 'Puntuación', 'Fecha']],
+                    body: tableData,
+                    startY: yPos,
+                    margin: { left: 14 },
+                    theme: 'grid',
+                    headStyles: { fillColor: [100, 100, 100] },
+                    styles: { fontSize: 10 }
+                });
+                
+                yPos = doc.lastAutoTable.finalY + 20;
+            }
+            
+            // Guardar el PDF
+            doc.save('resultados_examenes.pdf');
+        }
+
+        function printResults() {
+            window.print();
+        }
+    </script>
+</body>
+</html>
