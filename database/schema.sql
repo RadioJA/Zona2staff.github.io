@@ -48,21 +48,24 @@ CREATE TABLE IF NOT EXISTS eventos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(200) NOT NULL,
     descripcion TEXT,
-    fecha_inicio DATETIME NOT NULL,
-    fecha_fin DATETIME NOT NULL,
-    tipo ENUM('local', 'zonal') NOT NULL,
+    fecha DATE NOT NULL,
+    ubicacion VARCHAR(200),
+    tipo ENUM('local', 'zonal') NOT NULL DEFAULT 'local',
     club_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (club_id) REFERENCES clubes(id)
 );
 
 -- Tabla de finanzas
 CREATE TABLE IF NOT EXISTS finanzas (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    club_id INT NOT NULL,
     tipo ENUM('ingreso', 'gasto') NOT NULL,
-    descripcion VARCHAR(255) NOT NULL,
+    concepto VARCHAR(255) NOT NULL,
     monto DECIMAL(10,2) NOT NULL,
+    descripcion TEXT,
     fecha DATE NOT NULL,
-    club_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (club_id) REFERENCES clubes(id)
 );
 
