@@ -16,8 +16,9 @@ Sistema de gestión para clubes (Aventureros, Conquistadores, Guias, HD, Staff, 
 3. Configura el acceso en `database/config.php`.
 
 ## Uso
-- Accede a las diferentes secciones desde los archivos HTML según el tipo de club o usuario.
-- Administra miembros, eventos, asistencia y finanzas desde la interfaz web.
+1. **Página Principal**: Abre el archivo `index.html` en tu navegador para iniciar la aplicación.
+2. Accede a las diferentes secciones desde el panel de login según el tipo de club o usuario.
+3. Administra miembros, eventos, asistencia y finanzas desde la interfaz web.
 
 ## Créditos
 Desarrollado por Natanael León Veras.

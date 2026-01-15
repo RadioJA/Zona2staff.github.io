@@ -2,7 +2,7 @@
 function checkSession() {
     const currentUser = sessionStorage.getItem('currentUser');
     if (!currentUser) {
-        window.location.href = '../index_Login.html';
+        window.location.href = '../index.html';
         return false;
     }
     return JSON.parse(currentUser);
