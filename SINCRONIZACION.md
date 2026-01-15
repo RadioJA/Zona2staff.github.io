@@ -2,173 +2,241 @@
 
 Los registros ahora se guardan en la base de datos MySQL y pueden verse desde cualquier dispositivo.
 
-## 📦 Archivos Creados
+## � Funcionamiento Automático
+
+- Los datos se guardan **automáticamente en la BD** cuando hay conexión
+- Si **no hay conexión**, se guardan localmente y se sincronizan cuando se recupere la conexión
+- Los registros son accesibles desde **PC, tablet, teléfono, etc.**
+
+## 📦 Archivos Necesarios
 
 ### Backend (PHP):
-- `database/guardar_asistencia.php` - Guarda registros de asistencia
-- `database/obtener_asistencia.php` - Obtiene registros de asistencia
-- `database/guardar_evento.php` - Guarda eventos
-- `database/obtener_eventos.php` - Obtiene eventos
-- `database/guardar_gasto.php` - Guarda gastos e ingresos
-- `database/obtener_gastos.php` - Obtiene gastos e ingresos
+```
+database/guardar_asistencia.php
+database/obtener_asistencia.php
+database/guardar_evento.php
+database/obtener_eventos.php
+database/guardar_gasto.php
+database/obtener_gastos.php
+```
 
 ### Frontend (JavaScript):
-- `js/sync.js` - Librería para sincronizar datos con la base de datos
+```
+js/sync.js                    ← Librería principal de sincronización
+js/config-sync.js             ← Configuración y utilidades
+```
 
-## 🚀 Cómo Usar en tus Páginas
+## 🚀 Integración en tus Páginas HTML
 
-### 1. Incluir la librería sync.js en tu HTML:
+### Paso 1: Incluir los scripts
+Agregar esto en el `<head>` de tus archivos HTML:
+
 ```html
+<!-- Librería de sincronización -->
 <script src="../js/sync.js"></script>
+<script src="../js/config-sync.js"></script>
 ```
 
-### 2. Guardar Asistencia:
+### Paso 2: Usar en los formularios
+Reemplazar `localStorage.setItem()` con `await guardarAsistencia()`, etc.
+
+**Antes (localStorage - solo local):**
 ```javascript
-// Guardar asistencia de un miembro
-await guardarAsistencia(
-    miembro_id,      // ID del miembro
-    '2026-01-15',    // Fecha (opcional, usa hoy por defecto)
-    'presente'       // Estado: 'presente', 'ausente', 'tardanza'
-);
+localStorage.setItem('attendance', JSON.stringify(data));
 ```
 
-### 3. Obtener Asistencias:
+**Después (BD - accesible desde cualquier dispositivo):**
 ```javascript
-// Obtener todas las asistencias de un club
-const asistencias = await obtenerAsistencias(club_id);
-
-// O con una fecha específica
-const asistencias = await obtenerAsistencias(club_id, '2026-01-15');
+await guardarAsistencia(miembro_id, fecha, estado);
 ```
 
-### 4. Guardar Evento:
+### Paso 3: Migrar datos existentes
+Si tienes datos en localStorage, ejecutar en consola:
+
 ```javascript
-await guardarEvento(
-    'Nombre del Evento',     // Título
-    'Descripción del evento', // Descripción
-    '2026-01-20',             // Fecha
-    club_id,                  // ID del club
-    'Ubicación'               // Ubicación (opcional)
-);
+await migrarDatos();  // Migra todo a la BD
 ```
 
-### 5. Obtener Eventos:
+## 📋 Funciones Disponibles
+
+### Asistencias
 ```javascript
+// Guardar
+await guardarAsistencia(miembro_id, fecha, estado);
+// Obtener
+const registros = await obtenerAsistencias(club_id);
+```
+
+### Eventos
+```javascript
+// Guardar
+await guardarEvento(titulo, descripcion, fecha, club_id, ubicacion);
+// Obtener
 const eventos = await obtenerEventos(club_id);
 ```
 
-### 6. Guardar Gasto o Ingreso:
+### Finanzas
 ```javascript
-// Guardar un gasto
-await guardarGasto(
-    club_id,              // ID del club
-    'Concepto',           // Ej: 'Compra de uniformes'
-    150.00,               // Monto
-    'gasto',              // Tipo: 'gasto' o 'ingreso'
-    '2026-01-15',         // Fecha (opcional)
-    'Descripción'         // Descripción (opcional)
-);
+// Guardar gasto/ingreso
+await guardarGasto(club_id, concepto, monto, tipo, fecha, descripcion);
+// Obtener
+const resultado = await obtenerGastos(club_id, tipo, fechaInicio, fechaFin);
+// resultado.data → array de registros
+// resultado.resumen → {total_gastos, total_ingresos, balance}
 ```
 
-### 7. Obtener Gastos e Ingresos:
-```javascript
-// Obtener todos
-const resultado = await obtenerGastos(club_id);
-console.log(resultado.data);      // Array de gastos
-console.log(resultado.resumen);   // { total_gastos, total_ingresos, balance }
+## 💻 Ejemplos Prácticos
 
-// Con filtros
-const resultado = await obtenerGastos(
-    club_id,
-    'gasto',              // Tipo: 'gasto', 'ingreso'
-    '2026-01-01',         // Fecha inicio (opcional)
-    '2026-12-31'          // Fecha fin (opcional)
-);
-```
-
-## 📊 Ejemplo Completo - Registrar Asistencia
-
+### Ejemplo 1: Registrar Asistencia
 ```html
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <title>Registro de Asistencia</title>
-</head>
-<body>
-    <button onclick="registrarAsistencia()">Registrar Asistencia</button>
+<button onclick="registrarAsistencia()">Marcar Presente</button>
 
-    <script src="../js/sync.js"></script>
-    <script>
-        async function registrarAsistencia() {
-            // Guardar asistencia
-            const resultado = await guardarAsistencia(1, '2026-01-15', 'presente');
-            
-            if (resultado.success) {
-                alert('✓ Asistencia registrada');
-                // Actualizar lista de asistencias
-                const asistencias = await obtenerAsistencias(1);
-                console.log(asistencias);
-            } else {
-                alert('✗ Error: ' + resultado.error);
-            }
-        }
-    </script>
-</body>
-</html>
+<script src="../js/sync.js"></script>
+<script src="../js/config-sync.js"></script>
+<script>
+async function registrarAsistencia() {
+    const resultado = await guardarAsistencia(
+        1,                           // ID del miembro
+        new Date().toISOString().split('T')[0],  // Fecha de hoy
+        'presente'                   // Estado
+    );
+    
+    if (resultado.success) {
+        mostrarNotificacion('✓ Asistencia registrada', 'success');
+    } else if (resultado.local) {
+        mostrarNotificacion('⚠ Guardado localmente, se sincronizará', 'warning');
+    } else {
+        mostrarNotificacion('✗ Error: ' + resultado.error, 'danger');
+    }
+}
+</script>
 ```
 
-## 🔧 Configuración de la Base de Datos
-
-Antes de usar, asegúrate de:
-
-1. **Ejecutar el schema.sql**:
-   ```bash
-   mysql -u root -p < database/schema.sql
-   ```
-
-2. **Verificar config.php**:
-   - Host: `localhost`
-   - Usuario: `root`
-   - Contraseña: (tu contraseña MySQL)
-   - Base de datos: `zona2_db`
-
-3. **Si tu servidor está en la nube**, actualiza `config.php` con los datos de conexión correctos
-
-## ⚠️ Notas Importantes
-
-- Todos los datos se sincronizan automáticamente con la base de datos
-- Los registros son accesibles desde cualquier dispositivo conectado al servidor
-- Si no hay conexión a internet, usa `localStorage` temporalmente como respaldo
-- Los datos se guardan en formato JSON en las respuestas
-
-## 📱 Sincronización Offline (Próximamente)
-
-Para funcionar sin internet, puedes agregar:
+### Ejemplo 2: Listar Asistencias
 ```javascript
-// Guardar en localStorage si no hay conexión
-try {
-    // Intentar guardar en la BD
-    await guardarAsistencia(...);
-} catch (error) {
-    // Si falla, guardar localmente
-    let pendientes = JSON.parse(localStorage.getItem('pendientes')) || [];
-    pendientes.push({tipo: 'asistencia', datos: ...});
-    localStorage.setItem('pendientes', JSON.stringify(pendientes));
+async function mostrarAsistencias() {
+    const clubId = 1;  // o obtenerIdClub() desde config-sync.js
+    const asistencias = await obtenerAsistencias(clubId);
+    
+    asistencias.forEach(asistencia => {
+        console.log(`${asistencia.nombre} - ${asistencia.fecha} - ${asistencia.estado}`);
+    });
 }
+```
+
+### Ejemplo 3: Registrar Gasto
+```javascript
+async function registrarGasto() {
+    const resultado = await guardarGasto(
+        1,                    // club_id
+        'Uniforme',           // concepto
+        250.50,               // monto
+        'gasto',              // tipo: 'gasto' o 'ingreso'
+        '2026-01-15',         // fecha
+        'Compra de 10 uniformes'  // descripción
+    );
+    
+    if (resultado.success) {
+        alert('✓ Gasto registrado en la BD');
+    }
+}
+```
+
+### Ejemplo 4: Ver Resumen Financiero
+```javascript
+async function verFinanzas() {
+    const resultado = await obtenerGastos(1);  // club_id = 1
+    
+    console.log('Total Gastos:', formatoMoneda(resultado.resumen.total_gastos));
+    console.log('Total Ingresos:', formatoMoneda(resultado.resumen.total_ingresos));
+    console.log('Balance:', formatoMoneda(resultado.resumen.balance));
+    
+    // Listar todos los movimientos
+    resultado.data.forEach(registro => {
+        console.log(`${registro.fecha} | ${registro.concepto} | ${formatoMoneda(registro.monto)} (${registro.tipo})`);
+    });
+}
+```
+
+## 🛡️ Funciona Sin Internet
+
+Si no hay conexión:
+1. Los datos se guardan en **localStorage local**
+2. Cuando se recupere la conexión, se **sincronizan automáticamente** con la BD
+3. **No pierdes ningún dato**
+
+Para forzar la sincronización manual:
+```javascript
+await sincronizarRespaldosLocales();
+```
+
+## ⚙️ Configuración de la Base de Datos
+
+### Paso 1: Crear la base de datos
+```bash
+mysql -u root -p < database/schema.sql
+```
+
+### Paso 2: Verificar config.php
+```php
+// database/config.php
+define('DB_HOST', 'localhost');    // tu servidor MySQL
+define('DB_USER', 'root');          // tu usuario
+define('DB_PASS', '');              // tu contraseña
+define('DB_NAME', 'zona2_db');      // nombre de la BD
+```
+
+### Paso 3: Ejecutar con un servidor PHP
+```bash
+# Opción 1: Servidor local PHP (desde la carpeta del proyecto)
+php -S localhost:8000
+
+# Opción 2: Apache/Nginx (configura el virtual host)
+
+# Luego accede a: http://localhost:8000
+```
+
+## 🔗 Actualizar URL de Club
+
+Para que funcione correctamente, añade el ID del club en la URL:
+
+```
+asistencia_avent.html?club_id=1
+inscripcion_avent.html?club_id=1
+ingreso_gastos_avent.html?club_id=1
+```
+
+O establécelo en sessionStorage:
+```javascript
+sessionStorage.setItem('clubId', '1');
+```
+
+## 📱 Verificar Sincronización en Console
+
+Abre DevTools (F12) → Console y verás:
+```
+✓ Asistencia guardada en BD: Asistencia guardada correctamente
+✓ Asistencias obtenidas de BD: 5
+⚠ Sin conexión BD, usando respaldo local
+💾 Guardado en respaldo local: asistencia_1
 ```
 
 ## 🆘 Troubleshooting
 
-**Error: "Error de conexión"**
-- Verifica que MySQL esté corriendo
-- Revisa la configuración en `database/config.php`
+| Problema | Solución |
+|----------|----------|
+| No aparecen datos de otros dispositivos | Verifica que `club_id` sea el mismo |
+| Error "Error de conexión" | Verifica que MySQL esté corriendo y config.php sea correcto |
+| Los datos no se sincronizan | Abre Console (F12) para ver errores específicos |
+| Necesito limpiar datos locales | `localStorage.removeItem('respaldos_sync')` |
 
-**Error: "Table doesn't exist"**
-- Ejecuta `database/schema.sql` para crear las tablas
+## 🚀 Próximos Pasos
 
-**Error: CORS**
-- Es normal en desarrollo, usa un servidor local (PHP, Node, etc.)
+1. ✅ Integrar `sync.js` en asistencia_avent.html
+2. ✅ Integrar en ingreso_gastos_avent.html
+3. ✅ Integrar en eventos_locales_avent.html
+4. ✅ Hacer lo mismo para Conquistadores
+5. ✅ Hacer lo mismo para Staff
 
----
+¿Necesitas ayuda integrando en algún archivo específico?
 
-¿Necesitas ayuda integrando esto en alguna página específica?
