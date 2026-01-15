@@ -11,7 +11,7 @@ function checkSession() {
 // Función para cerrar sesión
 function logout() {
     sessionStorage.removeItem('currentUser');
-    window.location.href = '../index_Login.html';
+    window.location.href = '../index.html';
 }
 
 // Función para mostrar elementos según el rol
