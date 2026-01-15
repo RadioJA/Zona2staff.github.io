@@ -4,7 +4,21 @@
  * Con respaldo local si no hay conexión
  */
 
-const API_BASE = './database/';
+// Detectar automáticamente la ruta de la API
+function obtenerRutaAPI() {
+    const currentPath = window.location.pathname;
+    
+    if (currentPath.includes('/Aventureros/') || 
+        currentPath.includes('/Conquistadores/') ||
+        currentPath.includes('/Staff/') ||
+        currentPath.includes('/Zona/')) {
+        return '../database/';
+    }
+    return './database/';
+}
+
+const API_BASE = obtenerRutaAPI();
+console.log('🔌 API_BASE configurada a:', API_BASE);
 
 // ============ VERIFICAR CONEXIÓN ============
 

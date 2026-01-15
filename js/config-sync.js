@@ -3,22 +3,9 @@
  * Este archivo proporciona funciones auxiliares para migrar datos locales a la BD
  */
 
-// Determinar la ruta de la API según la carpeta
-function obtenerRutaAPI() {
-    const path = window.location.pathname;
-    
-    if (path.includes('/Aventureros/') || path.includes('/Conquistadores/')) {
-        return '../database/';
-    } else if (path.includes('/Staff/') || path.includes('/Zona/')) {
-        return '../database/';
-    } else {
-        return './database/';
-    }
-}
-
-// Actualizar la variable API_BASE en sync.js dinámicamente
+// Verificar que sync.js esté cargado
 if (typeof API_BASE === 'undefined') {
-    window.API_BASE = obtenerRutaAPI();
+    console.error('❌ ERROR: sync.js no está cargado. Asegúrate de incluir <script src="../js/sync.js"></script>');
 }
 
 // Obtener ID del club desde la URL o sessionStorage
@@ -26,8 +13,16 @@ function obtenerIdClub() {
     const params = new URLSearchParams(window.location.search);
     const clubId = params.get('club_id') || sessionStorage.getItem('clubId');
     
+    // Si no se encuentra, intenta detectarlo del rol del usuario
     if (!clubId) {
-        console.warn('⚠ No se encontró ID de club. Usar: ?club_id=1 en la URL');
+        const user = obtenerUsuarioActual();
+        if (user) {
+            if (user.role && user.role.includes('aventureros')) return '1';
+            if (user.role && user.role.includes('conquistador')) return '2';
+            if (user.role && user.role.includes('guias')) return '3';
+        }
+        console.warn('⚠ No se encontró ID de club. Usando club_id=1 por defecto');
+        return '1';
     }
     
     return clubId;
@@ -49,20 +44,28 @@ function obtenerUsuarioActual() {
 
 // Mostrar notificación de sincronización
 function mostrarNotificacion(mensaje, tipo = 'info', duracion = 3000) {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${tipo} alert-dismissible fade show`;
-    alertDiv.setAttribute('role', 'alert');
-    alertDiv.innerHTML = `
-        ${mensaje}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-    
-    const container = document.body.firstChild;
-    document.body.insertBefore(alertDiv, container);
-    
-    setTimeout(() => {
-        alertDiv.remove();
-    }, duracion);
+    // Crear elemento si Bootstrap está disponible
+    if (typeof bootstrap !== 'undefined') {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${tipo} alert-dismissible fade show position-fixed`;
+        alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        alertDiv.setAttribute('role', 'alert');
+        alertDiv.innerHTML = `
+            ${mensaje}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(alertDiv);
+        
+        setTimeout(() => {
+            if (alertDiv.parentElement) {
+                alertDiv.remove();
+            }
+        }, duracion);
+    } else {
+        // Fallback si Bootstrap no está disponible
+        console.log(`[${tipo.toUpperCase()}] ${mensaje}`);
+    }
 }
 
 // Migrar datos del localStorage a la BD
@@ -129,13 +132,13 @@ async function migrarDatos() {
             let migradas = 0;
             
             transacciones.forEach(async (trans) => {
-                if (trans.description && trans.amount) {
+                if (trans.descripcion && trans.monto) {
                     await guardarGasto(
                         obtenerIdClub() || 1,
-                        trans.description,
-                        parseFloat(trans.amount),
-                        trans.type || 'gasto',
-                        trans.date || new Date().toISOString().split('T')[0]
+                        trans.descripcion,
+                        parseFloat(trans.monto),
+                        trans.tipo || 'gasto',
+                        trans.fecha || new Date().toISOString().split('T')[0]
                     );
                     migradas++;
                 }
@@ -197,3 +200,4 @@ async function obtenerDatos(clave, clubId = null) {
 
 // Exportar configuración
 console.log('✓ Configuración de sincronización cargada');
+
