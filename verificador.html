@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificador de Sincronización</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { padding: 20px; }
+        .status-box { padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .ok { background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .warning { background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; }
+        .info { background-color: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        pre { background-color: #f5f5f5; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Verificador de Sincronización de Base de Datos</h1>
+        <p class="text-muted">Este script verifica si la sincronización está funcionando correctamente</p>
+
+        <div id="results"></div>
+
+        <button class="btn btn-primary btn-lg" onclick="runTests()">🧪 Ejecutar Pruebas</button>
+        <button class="btn btn-secondary btn-lg" onclick="testSync()">📝 Guardar Dato de Prueba</button>
+        <button class="btn btn-info btn-lg" onclick="viewData()">👀 Ver Todos los Datos</button>
+        <button class="btn btn-warning btn-lg" onclick="clearLocalStorage()">🗑️ Limpiar localStorage</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./js/sync.js"></script>
+    <script src="./js/config-sync.js"></script>
+    
+    <script>
+        const resultsDiv = document.getElementById('results');
+
+        function addResult(title, status, content) {
+            const statusClass = status === 'ok' ? 'ok' : status === 'error' ? 'error' : status === 'warning' ? 'warning' : 'info';
+            const statusIcon = status === 'ok' ? '✅' : status === 'error' ? '❌' : status === 'warning' ? '⚠️' : 'ℹ️';
+            
+            const html = `
+                <div class="status-box ${statusClass}">
+                    <h5>${statusIcon} ${title}</h5>
+                    <pre>${content}</pre>
+                </div>
+            `;
+            resultsDiv.innerHTML += html;
+        }
+
+        async function runTests() {
+            resultsDiv.innerHTML = '';
+            
+            // Test 1: Verificar API_BASE
+            addResult('Test 1: Configuración de API_BASE', 'info', 
+                `API_BASE: ${API_BASE}\nUbicación: ${window.location.pathname}`);
+
+            // Test 2: Verificar funciones
+            const functions = ['guardarGasto', 'obtenerGastos', 'guardarAsistencia', 'obtenerAsistencias'];
+            let allAvailable = true;
+            let functionStatus = '';
+            functions.forEach(func => {
+                const available = typeof window[func] === 'function';
+                functionStatus += `${available ? '✓' : '✗'} ${func}\n`;
+                if (!available) allAvailable = false;
+            });
+            addResult('Test 2: Funciones Disponibles', allAvailable ? 'ok' : 'error', functionStatus);
+
+            // Test 3: Probar conexión a BD
+            try {
+                const response = await fetch(API_BASE + 'obtener_gastos.php?club_id=1');
+                const data = await response.json();
+                
+                if (data.success) {
+                    addResult('Test 3: Conexión a Base de Datos', 'ok', 
+                        `✓ Conexión exitosa\n\nRegistros encontrados: ${data.count}\nBalance: ${data.resumen.balance}`);
+                } else {
+                    addResult('Test 3: Conexión a Base de Datos', 'error', 
+                        `✗ Error: ${data.error}`);
+                }
+            } catch (error) {
+                addResult('Test 3: Conexión a Base de Datos', 'error', 
+                    `✗ Error de conexión: ${error.message}\n\nVerifica:\n- MySQL esté corriendo\n- Servidor PHP esté activo`);
+            }
+
+            // Test 4: Verificar localStorage
+            const respaldos = JSON.parse(localStorage.getItem('respaldos_sync') || '{}');
+            addResult('Test 4: Almacenamiento Local', 'info', 
+                `Respaldos pendientes: ${Object.keys(respaldos).length}\n\n${JSON.stringify(respaldos, null, 2)}`);
+
+            // Test 5: Información del usuario
+            const user = JSON.parse(sessionStorage.getItem('currentUser') || 'null');
+            if (user) {
+                addResult('Test 5: Usuario Autenticado', 'ok', 
+                    `Usuario: ${user.username}\nRol: ${user.role}\nClub ID: ${obtenerIdClub()}`);
+            } else {
+                addResult('Test 5: Usuario Autenticado', 'warning', 
+                    '⚠️ No hay usuario autenticado. Inicia sesión primero.');
+            }
+        }
+
+        async function testSync() {
+            resultsDiv.innerHTML = '';
+            const testDate = new Date().toISOString();
+            const testDescription = `Prueba de sincronización - ${new Date().toLocaleTimeString()}`;
+            
+            addResult('Guardando dato de prueba...', 'info', 'Procesando...');
+            
+            try {
+                const resultado = await guardarGasto(
+                    obtenerIdClub() || 1,
+                    testDescription,
+                    123.45,
+                    'gasto',
+                    new Date().toISOString().split('T')[0]
+                );
+                
+                if (resultado.success) {
+                    addResult('✅ Dato Guardado en BD', 'ok', 
+                        `${JSON.stringify(resultado, null, 2)}\n\nAhora abre esta página desde otro dispositivo y presiona "Ver Todos los Datos" para verificar que aparece.`);
+                } else if (resultado.local) {
+                    addResult('⚠️ Guardado Localmente', 'warning', 
+                        `${JSON.stringify(resultado, null, 2)}\n\nEl dato se guardó en localStorage. Verifica que MySQL esté corriendo.`);
+                }
+            } catch (error) {
+                addResult('❌ Error al Guardar', 'error', error.message);
+            }
+        }
+
+        async function viewData() {
+            resultsDiv.innerHTML = '';
+            addResult('Cargando datos...', 'info', 'Procesando...');
+            
+            try {
+                const resultado = await obtenerGastos(obtenerIdClub() || 1);
+                
+                if (resultado.success || resultado.data) {
+                    const datos = resultado.data || [];
+                    let html = `Total de registros: ${datos.length}\n\n`;
+                    
+                    html += `RESUMEN FINANCIERO:\n`;
+                    html += `Total Gastos: $${resultado.resumen?.total_gastos || 0}\n`;
+                    html += `Total Ingresos: $${resultado.resumen?.total_ingresos || 0}\n`;
+                    html += `Balance: $${resultado.resumen?.balance || 0}\n\n`;
+                    
+                    html += `ÚLTIMOS 10 REGISTROS:\n`;
+                    html += `${'='.repeat(80)}\n`;
+                    datos.slice(0, 10).forEach((d, i) => {
+                        html += `${i+1}. ${d.fecha} | ${d.concepto} | $${d.monto} (${d.tipo})\n`;
+                    });
+                    
+                    addResult('✅ Datos de BD', 'ok', html);
+                } else {
+                    addResult('⚠️ Sin datos', 'warning', 'No hay registros en la BD aún.');
+                }
+            } catch (error) {
+                addResult('❌ Error al Obtener Datos', 'error', error.message);
+            }
+        }
+
+        function clearLocalStorage() {
+            if (confirm('¿Estás seguro? Esto borrará los datos locales.')) {
+                localStorage.removeItem('respaldos_sync');
+                resultsDiv.innerHTML = '';
+                addResult('✅ localStorage Limpiado', 'ok', 'Los respaldos locales han sido eliminados.');
+            }
+        }
+
+        // Ejecutar pruebas automáticamente al cargar
+        window.addEventListener('load', runTests);
+    </script>
+</body>
+</html>
